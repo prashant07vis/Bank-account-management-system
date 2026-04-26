@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if success %}
+
+<div class="success-wrapper">
+  <div class="success-card">
+    <i class="fa-solid fa-circle-check success-icon"></i>
+    <h2>Account Created Successfully!</h2>
+    
+    <div class="account-details">
+      <div class="detail-item">
+        <span class="label">Account Number</span>
+        <span class="value">{{ account_number }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">CIF Number</span>
+        <span class="value">{{ cif_number }}</span>
+      </div>
+    </div>
+
+    <p class="security-note">
+      <i class="fa-solid fa-shield-halved"></i>
+      Keep these details safe. Never share them with anyone — not even bank staff.
+    </p>
+
+    <a href="/home" class="home-btn">Go to Main Menu</a>
+  </div>
+</div>
+
+{% else %}
+
+<div class="form-wrapper">
+  <div class="form-card">
+
+    <h1>Create New Account</h1>
+    <p class="form-notice">
+      All fields marked <span class="required">*</span> are mandatory.<br>
+      Please provide accurate details — these will be verified.
+    </p>
+
+    <form method="POST" action="" onsubmit="return validateForm()" class="account-form" autocomplete="off" novalidate>
+
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="grid">
+
+        <div class="form-group">
+          <label>First Name <span class="required">*</span></label>
+          <input type="text" name="first_name" placeholder="First Name" required autofocus>
+        </div>
+
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" name="last_name" placeholder="Last Name (optional)">
+        </div>
+
+        <div class="form-group">
+          <label>Father's Name <span class="required">*</span></label>
+          <input type="text" name="father_name" placeholder="Father's Name" required>
+        </div>
+
+        <div class="form-group">
+          <label>Date of Birth <span class="required">*</span></label>
+          <input type="date" name="dob" required>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Full Residential Address <span class="required">*</span></label>
+          <input type="text" name="address" placeholder="House No, Street, City, PIN Code" required>
+        </div>
+
+        <div class="form-group">
+          <label>Gmail Address <span class="required">*</span></label>
+          <input type="email" name="email" id="email" placeholder="yourname@gmail.com" required>
+        </div>
+
+        <div class="form-group">
+          <label>Mobile Number <span class="required">*</span></label>
+          <div class="mobile-wrapper">
+            <span class="prefix">+91</span>
+            <input type="tel" name="mobile" id="mobile" maxlength="10" placeholder="10-digit number" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Account Type <span class="required">*</span></label>
+          <select name="account_type" required>
+            <option value="">Select Account Type</option>
+            <option value="1">Savings Account</option>
+            <option value="2">Current Account</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Nominee Name <span class="required">*</span></label>
+          <input type="text" name="nominee_name" placeholder="Nominee Full Name" required>
+        </div>
+
+        <div class="form-group">
+          <label>Nominee Relation <span class="required">*</span></label>
+          <input type="text" name="nominee_relation" placeholder="e.g. Father, Spouse, Son" required>
+        </div>
+
+        <div class="form-group">
+          <label>Nominee Mobile <span class="required">*</span></label>
+          <div class="mobile-wrapper">
+            <span class="prefix">+91</span>
+            <input type="tel" name="nominee_mobile" id="nominee_mobile" maxlength="10" placeholder="10-digit number" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Create 6-digit MPIN <span class="required">*</span></label>
+          <div class="mpin-wrapper">
+            <input type="password" name="mpin" id="mpin" placeholder="6 digits only" maxlength="6" required>
+            <i class="fa-solid fa-eye-slash toggle-icon" onclick="toggleMPIN()"></i>
+          </div>
+        </div>
+
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <i class="fa-solid fa-user-plus"></i> Create Account
+      </button>
+
+    </form>
+
+  </div>
+</div>
+
+{% endif %}
+
+<style>
+  :root {
+    --accent: #60a5fa;
+    --accent-dark: #3b82f6;
+    --danger: #f87171;
+    --success: #10b981;
+    --text-light: #94a3b8;
+    --input-bg: #0f172a;
+  }
+
+  .form-wrapper, .success-wrapper {
+    min-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+  }
+
+  .form-card, .success-card {
+    background: #1e293b;
+    width: 100%;
+    max-width: 1100px;
+    border-radius: 16px;
+    padding: 40px;
+    border: 1px solid rgba(96,165,250,0.18);
+    box-shadow: 0 12px 50px rgba(0,0,0,0.6);
+  }
+
+  h1, h2 {
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+  }
+
+  .form-notice {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.5;
+  }
+
+  .required { color: var(--danger); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.55rem;
+    font-weight: 500;
+  }
+
+  input, select {
+    padding: 13px 16px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background: var(--input-bg);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3.5px rgba(96,165,250,0.18);
+  }
+
+  .mobile-wrapper, .mpin-wrapper {
+    position: relative;
+  }
+
+  .mobile-wrapper .prefix {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    pointer-events: none;
+  }
+
+  .mobile-wrapper input {
+    padding-left: 60px;
+  }
+
+  .toggle-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 1.15rem;
+  }
+
+  .toggle-icon:hover { color: var(--accent); }
+
+  .submit-btn {
+    width: 100%;
+    max-width: 320px;
+    margin: 2.5rem auto 0;
+    padding: 14px;
+    background: var(--accent);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.25s ease;
+  }
+
+  .submit-btn:hover {
+    background: var(--accent-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(96,165,250,0.35);
+  }
+
+  /* Success Screen */
+  .success-icon {
+    font-size: 5.5rem;
+    color: var(--success);
+    margin-bottom: 1.5rem;
+  }
+
+  .account-details {
+    background: rgba(16,185,129,0.08);
+    border-radius: 12px;
+    padding: 1.8rem;
+    margin: 2rem 0;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .detail-item:last-child { margin-bottom: 0; }
+
+  .label { color: var(--text-light); font-weight: 500; }
+  .value { font-weight: 600; color: white; }
+
+  .security-note {
+    color: var(--danger);
+    font-weight: 500;
+    text-align: center;
+    margin: 1.8rem 0;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .security-note i { margin-right: 8px; }
+
+  .home-btn {
+    display: inline-block;
+    padding: 14px 40px;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.25s;
+  }
+
+  .home-btn:hover {
+    background: var(--accent-dark);
+    transform: translateY(-2px);
+  }
+
+  .full-width { grid-column: 1 / -1; }
+
+  @media (max-width: 1024px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+    .form-card, .success-card { padding: 30px 20px; }
+  }
+</style>
+
+<script>
+  function toggleMPIN() {
+    const input = document.getElementById("mpin");
+    const icon = document.querySelector(".toggle-icon");
+
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    } else {
+      input.type = "password";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    }
+  }
+
+  function validateForm() {
+    const email = document.getElementById("email").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
+    const nominee_mobile = document.getElementById("nominee_mobile").value.trim();
+    const mpin = document.getElementById("mpin").value.trim();
+
+    if (!email.endsWith("@gmail.com") || email.length < 10) {
+      alert("Please enter a valid Gmail address (must end with @gmail.com)");
+      return false;
+    }
+
+    if (mobile.length !== 10 || isNaN(mobile)) {
+      alert("Mobile number must be exactly 10 digits");
+      return false;
+    }
+
+    if (nominee_mobile.length !== 10 || isNaN(nominee_mobile)) {
+      alert("Nominee mobile number must be exactly 10 digits");
+      return false;
+    }
+
+    if (mpin.length !== 6 || isNaN(mpin)) {
+      alert("MPIN must be exactly 6 digits");
+      return false;
+    }
+
+    return true;
+  }
+</script>
+
+{% endblock %}

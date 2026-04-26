@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bharat Bank</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --gradient: linear-gradient(135deg, #1e3a8a, #0f172a);
+      --card: rgba(15, 23, 42, 0.94);
+      --border: rgba(96, 165, 250, 0.38);
+      --accent: #60a5fa;
+      --accent-light: #93c5fd;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --text: #f1f5f9;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--gradient);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .top-menu {
+      position: fixed;
+      top: 1rem;
+      right: 1.5rem;
+      display: flex;
+      gap: 0.9rem;
+      z-index: 1000;
+    }
+
+    .top-menu a, .top-menu button {
+      padding: 0.65rem 1.4rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(30, 41, 59, 0.7);
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(6px);
+    }
+
+    .top-menu a:hover, .top-menu button:hover {
+      background: var(--accent);
+      color: #0f172a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4);
+    }
+
+    .header {
+      text-align: center;
+      padding: 7rem 1rem 3rem;
+    }
+
+    .logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 5.5rem;
+      margin: 0;
+      letter-spacing: 4px;
+      background: linear-gradient(90deg, #60a5fa, #a5b4fc, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-hindi {
+      font-size: 1.8rem;
+      margin-top: 0.8rem;
+      opacity: 0.95;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.6rem;
+      padding: 0 1rem 3rem;
+    }
+
+    .neon-btn {
+      padding: 1.3rem 2.8rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: 2px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .neon-btn:hover {
+      background: var(--accent);
+      color: #0f172a;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(96, 165, 250, 0.5);
+    }
+
+    .neon-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      transition: 0.6s;
+    }
+
+    .neon-btn:hover::before {
+      left: 100%;
+    }
+
+    /* Toggleable Coming Soon Sidebar */
+    .sidebar {
+      position: fixed;
+      left: -280px;
+      top: 140px;
+      width: 260px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.8rem 1.5rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      z-index: 950;
+      transition: all 0.4s ease;
+    }
+
+    .sidebar.show {
+      left: 20px;
+    }
+
+    .sidebar-toggle {
+      position: fixed;
+      left: 20px;
+      top: 140px;
+      width: 48px;
+      height: 48px;
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.4rem;
+      cursor: pointer;
+      z-index: 960;
+      box-shadow: 0 4px 15px rgba(96, 165, 250, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .sidebar h3 {
+      color: var(--accent);
+      margin-top: 0;
+      font-size: 1.35rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .feature-list li {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(96,165,250,0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.02rem;
+    }
+
+    .feature-list li:last-child { border-bottom: none; }
+    .feature-list i {
+      color: var(--success);
+      width: 20px;
+    }
+
+    section h2 {
+      text-align: center;
+      font-size: 2.4rem;
+      margin: 3rem 0 2rem;
+      color: var(--accent-light);
+    }
+
+    /* Services Section */
+    .services-section {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .service-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem 1.8rem;
+      transition: all 0.4s ease;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .service-card:hover {
+      transform: translateY(-12px);
+      border-color: var(--accent-light);
+      box-shadow: 0 20px 50px rgba(96, 165, 250, 0.4);
+    }
+
+    .service-card i {
+      font-size: 3.2rem;
+      margin-bottom: 1.2rem;
+      background: linear-gradient(135deg, var(--accent), #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .service-card h3 {
+      color: var(--accent-light);
+      margin: 0 0 1rem;
+    }
+
+    .service-card .coming-soon {
+      display: inline-block;
+      background: var(--warning);
+      color: #0f172a;
+      font-size: 0.85rem;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    /* Customer Reviews - Photos Removed */
+    .reviews-section {
+      max-width: 1100px;
+      margin: 4rem auto;
+      padding: 0 1rem;
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2rem;
+    }
+
+    .review-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .review-card .stars {
+      color: #fbbf24;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .review-card p {
+      font-style: italic;
+      opacity: 0.95;
+      line-height: 1.7;
+    }
+
+    .review-card .customer {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .review-card .customer strong {
+      color: var(--accent-light);
+    }
+
+    /* Offer Track */
+    .offer-wrapper {
+      overflow: hidden;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .offer-track {
+      display: flex;
+      gap: 2rem;
+      transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .offer-card {
+      flex: 0 0 340px;
+      background: var(--card);
+      padding: 1.8rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      transition: all 0.4s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .offer-card:hover {
+      transform: translateY(-12px) scale(1.04);
+      border-color: var(--accent-light);
+      box-shadow: 0 20px 50px rgba(96, 165, 250, 0.35);
+    }
+
+    .offer-card h3 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    /* FAQ */
+    .faq-container {
+      max-width: 900px;
+      margin: 0 auto 4rem;
+      padding: 0 1rem;
+    }
+
+    .faq-item {
+      background: var(--card);
+      margin: 1rem 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+      border-color: var(--accent);
+    }
+
+    .faq-question {
+      padding: 1.2rem 1.8rem;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(30, 41, 59, 0.4);
+    }
+
+    .faq-question i {
+      transition: transform 0.3s;
+    }
+
+    .faq-item.active .faq-question i {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      padding: 0 1.8rem 1.2rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s ease;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 300px;
+      padding: 0 1.8rem 1.4rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 4rem 1rem 3rem;
+      color: #94a3b8;
+      font-size: 0.95rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toggle Button for Sidebar -->
+  <button class="sidebar-toggle" onclick="toggleSidebar()" title="Coming Soon Features">
+    <i class="fas fa-rocket"></i>
+  </button>
+
+  <!-- Coming Soon Sidebar (Hidden by default) -->
+  <div class="sidebar" id="sidebar">
+    <h3><i class="fas fa-rocket"></i> Coming Soon</h3>
+    <ul class="feature-list">
+      <li><i class="fas fa-credit-card"></i> Bharat RuPay Debit Card</li>
+      <li><i class="fas fa-credit-card"></i> Premium Credit Card</li>
+      <li><i class="fas fa-mobile-alt"></i> Bharat Bank Mobile App</li>
+      <li><i class="fas fa-globe"></i> Internet Banking</li>
+      <li><i class="fas fa-hand-holding-usd"></i> Kisan Credit Card</li>
+      <li><i class="fas fa-car"></i> Vehicle Loan</li>
+      <li><i class="fas fa-home"></i> Home Loan @ 8.99%</li>
+      <li><i class="fas fa-seedling"></i> Kisan Loan (Crop & Equipment)</li>
+      <li><i class="fas fa-university"></i> Fixed Deposit @ 7.5%+</li>
+      <li><i class="fas fa-wallet"></i> UPI & Wallet Services</li>
+    </ul>
+  </div>
+
+  <!-- TOP MENU -->
+  <div class="top-menu">
+    <a href="/help">Help</a>
+    <a href="/about_bank">About</a>
+    <a href="/developers">Developers</a>
+    <a href="/privacy">Privacy</a>
+    <button onclick="scrollToSection('faq')">FAQ</button>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-text">BHARAT BANK</div>
+    <div class="welcome-hindi">🙏 नमस्ते, भारत बैंक में आपका स्वागत है</div>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-buttons">
+    <button class="neon-btn" onclick="go('create_account')">Create Account</button>
+    <button class="neon-btn" onclick="go('user_login')">User Login</button>
+    <button class="neon-btn" onclick="go('admin_login')">Admin Login</button>
+    <button class="neon-btn" onclick="go('change_admin')">Change Admin</button>
+  </div>
+
+  <!-- SERVICES SECTION -->
+  <section class="services-section">
+    <h2>Our Banking Services</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <i class="fas fa-credit-card"></i>
+        <h3>Bharat RuPay Debit Card</h3>
+        <p>Free lifetime debit card with every savings account. 1% cashback on UPI transactions.</p>
+        <span class="coming-soon">Launching April 2026</span>
+      </div>
+
+      <div class="service-card">
+        <i class="fas fa-credit-card" style="background: linear-gradient(135deg, #f472b6, #c084fc);"></i>
+        <h3>Premium Credit Card</h3>
+        <p>Up to ₹5 Lakh limit | Airport lounge access | 5% cashback on shopping & dining.</p>
+        <span class="coming-soon">Launching May 2026</span>
+      </div>
+
+      <div class="service-card">
+        <i class="fas fa-hand-holding-usd"></i>
+        <h3>Loans & Advances</h3>
+        <p>Home Loan • Personal Loan • Vehicle Loan • Kisan Loan • Education Loan</p>
+        <span class="coming-soon">Instant Approval Available</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFERS -->
+  <section>
+    <h2>Special Offers</h2>
+    <div class="offer-wrapper">
+      <div class="offer-track" id="offerTrack">
+        <div class="offer-card">
+          <h3>Home Loan @ 8.99%</h3>
+          <p>Lowest interest | Fast approval | Up to ₹10 Crore</p>
+        </div>
+        <div class="offer-card">
+          <h3>Personal Loan</h3>
+          <p>Instant approval | No collateral | ₹50,000 – ₹15 Lakh</p>
+        </div>
+        <div class="offer-card">
+          <h3>Zero Balance Savings</h3>
+          <p>No minimum balance | Free RuPay Debit Card</p>
+        </div>
+        <div class="offer-card">
+          <h3>Digital Banking</h3>
+          <p>UPI, Mobile Banking & Internet Banking – Coming Soon</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER REVIEWS (Photos Removed) -->
+  <section class="reviews-section">
+    <h2>What Our Customers Say</h2>
+    <div class="review-grid">
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p>"Opened my zero-balance account in just 7 minutes through video KYC. The team was very helpful. Best bank experience ever!"</p>
+        <div class="customer">
+          <strong>Rahul Sharma</strong><br>
+          <small>Farmer, Madhya Pradesh</small>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="stars">★★★★☆</div>
+        <p>"Applied for home loan and got approval within 48 hours. Interest rate is really low compared to other banks. Thank you Bharat Bank!"</p>
+        <div class="customer">
+          <strong>Priya Patel</strong><br>
+          <small>Teacher, Gujarat</small>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p>"I love the idea of completely digital banking. Waiting for the mobile app launch. Already recommended Bharat Bank to all my friends."</p>
+        <div class="customer">
+          <strong>Amit Kumar</strong><br>
+          <small>Software Engineer, Bangalore</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-container">
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          Is zero balance account available? <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          Yes, we offer completely zero-balance savings accounts with no minimum balance requirement.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          What is the interest rate on personal loans? <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          Personal loan interest starts from 10.49% p.a. depending on your credit score and profile.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          Do you provide home loans? <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          Yes — Home loans starting from 8.99% with flexible tenure up to 30 years.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          Is net banking / mobile app available? <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          Our full digital banking suite including mobile app and internet banking is launching very soon.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          How can I open an account online? <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          Click "Create Account" above and complete Aadhaar-based video KYC in just 5–7 minutes.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          Is my money safe with Bharat Bank? <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          We follow all RBI guidelines and use highest level of encryption & security protocols.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2026 Bharat Bank. All rights reserved.<br>
+    Crafted with ❤️ by <strong>Team Code Yoddha</strong>
+  </footer>
+
+  <script>
+    // Toggle Sidebar
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('show');
+    }
+
+    // Page navigation
+    function go(page) {
+      const routes = {
+        create_account: "/create_account",
+        user_login: "/user_login",
+        admin_login: "/admin_login",
+        change_admin: "/admin/change_admin"
+      };
+      window.location.href = routes[page] || "/";
+    }
+
+    // Offer slider
+    const track = document.getElementById("offerTrack");
+    let index = 0;
+    const total = track.children.length;
+    const cardWidth = 340 + 32;
+
+    setInterval(() => {
+      index = (index + 1) % total;
+      track.style.transform = `translateX(-${index * cardWidth}px)`;
+    }, 3800);
+
+    // Smooth scroll
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+    }
+
+    // FAQ Accordion
+    function toggleFAQ(element) {
+      const item = element.parentElement;
+      item.classList.toggle("active");
+    }
+
+    // Close sidebar when clicking outside (optional nice touch)
+    document.addEventListener('click', function(e) {
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.querySelector('.sidebar-toggle');
+      if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+        sidebar.classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html>

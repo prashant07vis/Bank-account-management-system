@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bharat Bank – Help & Support</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --gradient: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      --glass: rgba(30, 41, 59, 0.38);
+      --border: rgba(96, 165, 250, 0.16);
+      --accent: #60a5fa;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --success: #34d399;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--gradient);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      background-attachment: fixed;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 5rem 0 4rem;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.5rem, 7vw, 4.8rem);
+      font-weight: 700;
+      background: linear-gradient(90deg, #60a5fa, #a5b4fc, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 40px rgba(96, 165, 250, 0.35);
+      letter-spacing: 1.5px;
+      margin-bottom: 1.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.3rem;
+      color: var(--text-light);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .support-card {
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+      margin: 0 auto 4rem;
+      max-width: 820px;
+    }
+
+    .support-card p {
+      font-size: 1.1rem;
+      margin-bottom: 1.8rem;
+      color: var(--text-light);
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .help-list {
+      list-style: none;
+      margin: 2rem 0;
+    }
+
+    .help-list li {
+      font-size: 1.1rem;
+      margin-bottom: 1.2rem;
+      padding-left: 2.2rem;
+      position: relative;
+      color: var(--text-light);
+    }
+
+    .help-list li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .contact-box {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 1rem;
+      padding: 1.8rem;
+      text-align: center;
+      margin: 2.5rem 0;
+    }
+
+    .contact-box p {
+      font-size: 1.15rem;
+      margin: 0.6rem 0;
+      color: #d1fae5;
+    }
+
+    .contact-highlight {
+      color: var(--success);
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .icon {
+      font-size: 4.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      display: block;
+      color: var(--accent);
+      opacity: 0.9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 4rem 0 3rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      border-top: 1px solid rgba(96,165,250,0.12);
+    }
+
+    @media (max-width: 640px) {
+      header { padding: 4rem 0 3rem; }
+      h1 { font-size: clamp(2.2rem, 9vw, 3.8rem); }
+      .support-card { padding: 2.2rem 1.6rem; }
+      .icon { font-size: 3.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Help & Support</h1>
+      <p class="subtitle">We're here to assist you 24/7</p>
+    </header>
+
+    <div class="support-card">
+      <div class="icon">🛠️</div>
+
+      <p>
+        Facing any issues with your <span class="highlight">Bharat Bank</span> account or services? 
+        Please follow these quick troubleshooting steps first:
+      </p>
+
+      <ul class="help-list">
+        <li>Double-check that your <strong>account number</strong> and <strong>MPIN</strong> are entered correctly (case-sensitive).</li>
+        <li>If your account is <strong>locked</strong> after multiple failed attempts, contact the administrator immediately to unlock it.</li>
+        <li>Ensure you have a <strong>stable internet connection</strong> before initiating any transaction to avoid timeouts or failures.</li>
+        <li>For all <strong>loan-related queries</strong> (application status, repayment, eligibility, etc.), reach out directly to the bank administrator.</li>
+      </ul>
+
+      <div class="contact-box">
+        <p style="font-size: 1.25rem; margin-bottom: 1rem;">
+          Need further help?
+        </p>
+        <p>
+          Contact the <span class="contact-highlight">Bank Administration Team</span> right away.
+        </p>
+        <p style="margin-top: 1.2rem; font-size: 1.15rem;">
+          We are available to assist you promptly.
+        </p>
+      </div>
+
+      <p style="text-align: center; font-style: italic; color: #cbd5e1; margin-top: 2rem;">
+        Your smooth banking experience is our top priority.
+      </p>
+    </div>
+
+    <footer>
+      <p>© 2025–2026 Bharat Bank • Secure Banking for a Digital India</p>
+    </footer>
+  </div>
+
+</body>
+</html>

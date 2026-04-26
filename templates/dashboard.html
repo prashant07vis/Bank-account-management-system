@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharat Bank – Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #0d1117;
+            --sidebar-bg: #020617;
+            --card: rgba(30, 41, 59, 0.65);
+            --border: rgba(96, 165, 250, 0.25);
+            --accent: #60a5fa;
+            --text: #e2e8f0;
+            --text-light: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --gradient: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--gradient);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            padding: 2rem 1.5rem;
+            border-right: 1px solid rgba(96,165,250,0.12);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 3rem;
+            letter-spacing: 1px;
+        }
+
+        .profile {
+            text-align: center;
+            margin-bottom: 2.8rem;
+        }
+
+        .profile img {
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 3px solid rgba(96,165,250,0.3);
+            box-shadow: 0 0 25px rgba(96,165,250,0.2);
+        }
+
+        .profile h3 { font-size: 1.28rem; margin-bottom: 4px; }
+        .profile p { font-size: 0.9rem; color: var(--text-light); }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .menu a:hover, .menu a.active {
+            background: rgba(96,165,250,0.18);
+            transform: translateX(6px);
+        }
+
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2.8rem 3rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome { font-size: 1.8rem; font-weight: 600; }
+
+        .logout {
+            background: var(--danger);
+            color: white;
+            padding: 0.75rem 1.8rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .logout:hover { background: #dc2626; transform: translateY(-2px); }
+
+        /* ✅ FIX 3: Flash messages with correct icons per category */
+        .flash-container { margin-bottom: 1.8rem; }
+
+        .flash {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            text-align: center;
+            animation: fadeOut 6s forwards;
+            border-left: 5px solid;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .flash.success {
+            background: rgba(16,185,129,0.15);
+            color: var(--success);
+            border-left-color: var(--success);
+        }
+        .flash.danger {
+            background: rgba(239,68,68,0.15);
+            color: var(--danger);
+            border-left-color: var(--danger);
+        }
+        .flash.warning {
+            background: rgba(245,158,11,0.15);
+            color: var(--warning);
+            border-left-color: var(--warning);
+        }
+        .flash.info {
+            background: rgba(59,130,246,0.15);
+            color: var(--info);
+            border-left-color: var(--info);
+        }
+
+        @keyframes fadeOut {
+            0%   { opacity: 1; transform: translateX(0); }
+            75%  { opacity: 1; }
+            100% { opacity: 0; transform: translateX(20px); }
+        }
+
+        .account-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2.8rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .account-card h2, .account-card h3 {
+            color: var(--accent);
+            margin-bottom: 1.4rem;
+            font-size: 1.5rem;
+        }
+
+        .balance-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1.4rem;
+            flex-wrap: wrap;
+        }
+
+        .balance {
+            font-size: 3.2rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        .balance.hidden { display: none; }
+
+        .masked-balance {
+            font-size: 3.2rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: var(--text);
+        }
+
+        .toggle-balance {
+            font-size: 1.9rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .toggle-balance:hover { color: var(--accent); transform: scale(1.2); }
+
+        .account-info {
+            color: var(--text-light);
+            margin-top: 1rem;
+            font-size: 1.08rem;
+        }
+
+        .services-header {
+            font-size: 1.65rem;
+            margin-bottom: 1.6rem;
+            font-weight: 600;
+        }
+
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+            gap: 1.6rem;
+        }
+
+        .service {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.4s ease;
+        }
+
+        .service:hover {
+            transform: translateY(-10px) scale(1.03);
+            background: rgba(96,165,250,0.15);
+            box-shadow: 0 15px 25px rgba(96,165,250,0.15);
+        }
+
+        .service i {
+            font-size: 2.4rem;
+            color: var(--accent);
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .debit-card-visual {
+            width: 360px;
+            height: 210px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #1e40af, #0f172a);
+            padding: 24px;
+            color: white;
+            position: relative;
+            margin: 20px 0 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .card-logo {
+            width: 65px;
+            position: absolute;
+            right: 24px;
+            top: 20px;
+        }
+
+        .card-number {
+            margin-top: 50px;
+            font-size: 19px;
+            letter-spacing: 3px;
+            font-weight: 500;
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            font-size: 1.05rem;
+        }
+
+        .debit-service {
+            background: rgba(96,165,250,0.15);
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 1px solid rgba(96,165,250,0.3);
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            display: block;
+        }
+
+        .debit-service:hover {
+            background: rgba(96,165,250,0.25);
+            transform: translateY(-2px);
+        }
+
+        .apply-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 15px 32px;
+            background: linear-gradient(90deg, #60a5fa, #3b82f6);
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1.08rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 25px rgba(96,165,250,0.35);
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(96,165,250,0.5);
+        }
+
+        /* ✅ Card status badge */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .status-active    { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid #10b981; }
+        .status-applied   { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid #3b82f6; }
+        .status-rejected  { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid #ef4444; }
+        .status-notapplied{ background: rgba(148,163,184,0.15);color: #94a3b8; border: 1px solid #94a3b8; }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); z-index: 1000; transition: 0.4s ease; }
+            .sidebar.active { transform: translateX(0); }
+            .main { margin-left: 0; padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="logo">🏦 Bharat Bank</div>
+
+    <div class="profile">
+        <img src="https://i.imgur.com/2DhmtJ4.png" alt="Profile">
+        <h3>{{ name }}</h3>
+        <p>{{ acc_no }}</p>
+    </div>
+
+    <div class="menu">
+        <a href="/dashboard" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+        <a href="/passbook"><i class="fa-solid fa-book"></i> Passbook</a>
+        <a href="/mini_statement"><i class="fa-solid fa-list"></i> Mini Statement</a>
+        <a href="/loan_status"><i class="fa-solid fa-chart-pie"></i> Loan Status</a>
+    </div>
+</div>
+
+<div class="main">
+
+    <div class="topbar">
+        <h2 class="welcome">Welcome, {{ name }}</h2>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+
+    <!-- ✅ FIX 3: Correct icon per flash category -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">
+            {% if category == 'success' %}
+                <i class="fa-solid fa-circle-check"></i>
+            {% elif category == 'danger' %}
+                <i class="fa-solid fa-circle-xmark"></i>
+            {% elif category == 'warning' %}
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            {% else %}
+                <i class="fa-solid fa-circle-info"></i>
+            {% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- ACCOUNT BALANCE -->
+    <div class="account-card">
+        <h2>Account Balance</h2>
+        <div class="balance-wrapper">
+            <div class="balance hidden" id="balanceReal">₹{{ balance }}</div>
+            <div class="masked-balance" id="balanceMasked">•••••••••</div>
+            <i class="fa-solid fa-eye-slash toggle-balance" id="toggleBalance"></i>
+        </div>
+        <div class="account-info">Account Number : {{ acc_no }}</div>
+    </div>
+
+    <!-- BANKING SERVICES -->
+    <h3 class="services-header">Banking Services</h3>
+    <div class="services">
+        <a href="/deposit" class="service">
+            <i class="fa-solid fa-arrow-down"></i>
+            <div>Deposit</div>
+        </a>
+        <a href="/withdraw" class="service">
+            <i class="fa-solid fa-arrow-up"></i>
+            <div>Withdraw</div>
+        </a>
+        <a href="/transfer" class="service">
+            <i class="fa-solid fa-right-left"></i>
+            <div>Transfer</div>
+        </a>
+        <a href="/apply_loan" class="service">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <div>Apply Loan</div>
+        </a>
+        <a href="/change_mpin" class="service">
+            <i class="fa-solid fa-key"></i>
+            <div>Change MPIN</div>
+        </a>
+        <a href="/close_account" class="service">
+            <i class="fa-solid fa-user-xmark"></i>
+            <div>Close Account</div>
+        </a>
+    </div>
+
+    <!-- DEBIT CARD SECTION -->
+    <div class="account-card" style="margin-top: 2.8rem;">
+        <h3>💳 Debit Card</h3>
+
+        <!-- ✅ FIX 4 + 5: Card status badge with correct color + correct message -->
+        {% if card_status == "Active" %}
+            <span class="status-badge status-active">
+                <i class="fa-solid fa-circle-check"></i> Active
+            </span>
+
+        {% elif card_status == "Applied for Debit Card" %}
+            <span class="status-badge status-applied">
+                <i class="fa-solid fa-clock"></i> Applied for Debit Card — Pending Approval
+            </span>
+
+        {% elif card_status == "Rejected" %}
+            <span class="status-badge status-rejected">
+                <i class="fa-solid fa-circle-xmark"></i> Rejected — You can reapply after 24 hours
+            </span>
+
+        {% else %}
+            <span class="status-badge status-notapplied">
+                <i class="fa-solid fa-circle-minus"></i> Not Applied
+            </span>
+        {% endif %}
+
+        {% if has_card %}
+            <!-- User has active card — show card visual -->
+            <div class="debit-card-visual">
+                <img src="{{ 'https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg' if network == 'Visa' else 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/RuPay.svg/2560px-RuPay.svg.png' }}"
+                     class="card-logo" alt="Card Logo">
+                <h3>Bharat Bank</h3>
+                <div class="card-number">XXXX XXXX XXXX {{ card_last4 }}</div>
+                <div class="card-bottom">
+                    <span>{{ name }}</span>
+                    <span>{{ expiry }}</span>
+                </div>
+            </div>
+
+            <a href="/view_card_secure" class="debit-service">
+                👁 View Full Card Details
+            </a>
+
+        {% elif card_status == "Applied for Debit Card" %}
+            <!-- ✅ FIX 5: Applied — show waiting message, NO apply button -->
+            <div style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:12px;padding:20px;margin:20px 0;">
+                <p style="color:#93c5fd;font-weight:500;margin:0;">
+                    <i class="fa-solid fa-hourglass-half" style="margin-right:10px;"></i>
+                    Your debit card application is under review. Please wait for admin approval.
+                </p>
+            </div>
+
+        {% elif card_status == "Rejected" %}
+            <!-- ✅ FIX 5: Rejected within 24 hours — show rejected message, NO apply button -->
+            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:20px;margin:20px 0;">
+                <p style="color:#fca5a5;font-weight:500;margin:0;">
+                    <i class="fa-solid fa-circle-xmark" style="margin-right:10px;"></i>
+                    Your debit card request was rejected. You can reapply after 24 hours from rejection.
+                </p>
+            </div>
+
+        {% else %}
+            <!-- ✅ FIX 5: Not Applied OR 24 hours passed after rejection — show apply button -->
+            <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:20px;margin:20px 0;">
+                <p style="color:#fcd34d;font-weight:500;margin:0;">
+                    <i class="fa-solid fa-info-circle" style="margin-right:10px;"></i>
+                    You haven't applied for a Debit Card yet.
+                </p>
+            </div>
+
+            <a href="/apply_debit_card" class="apply-btn">
+                <i class="fa-solid fa-credit-card"></i> Apply for Debit Card
+            </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+const toggleBtn   = document.getElementById('toggleBalance');
+const realBalance = document.getElementById('balanceReal');
+const masked      = document.getElementById('balanceMasked');
+
+if (toggleBtn && realBalance && masked) {
+    toggleBtn.addEventListener('click', () => {
+        const isHidden = realBalance.classList.toggle('hidden');
+        if (isHidden) {
+            masked.style.display = 'block';
+            toggleBtn.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            masked.style.display = 'none';
+            toggleBtn.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+}
+</script>
+
+</body>
+</html>

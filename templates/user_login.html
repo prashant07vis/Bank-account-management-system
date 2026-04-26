@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+  <title>Secure Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #e2e8f0;
+      padding: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 16px;
+      padding: 40px 32px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      border: 1px solid #334155;
+      transition: transform 0.25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .logo {
+      font-size: 3.8rem;
+      color: #60a5fa;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #93c5fd;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 14px 14px 48px;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      background: #0f172a;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+    }
+
+    input::placeholder {
+      color: #64748b;
+    }
+
+    .toggle {
+      color: #60a5fa;
+      font-size: 0.9rem;
+      text-align: right;
+      display: block;
+      margin-top: -8px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .toggle:hover {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: #3b82f6;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-top: 12px;
+    }
+
+    .btn:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.35);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .error-message {
+      color: #f87171;
+      font-size: 0.95rem;
+      text-align: center;
+      margin-bottom: 20px;
+      background: rgba(248, 113, 113, 0.12);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 28px;
+      color: #93c5fd;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .back:hover {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 32px 24px;
+      }
+      h2 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="logo">
+      <i class="fa-solid fa-building-columns"></i>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="error-message">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h2>Secure Login</h2>
+
+    <form method="POST">
+
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="input-group">
+        <i class="fa-solid fa-user"></i>
+        <input type="text"
+               name="account"
+               placeholder="Account Number"
+               required
+               autocomplete="off">
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password"
+               id="mpin"
+               name="mpin"
+               placeholder="6-digit MPIN"
+               maxlength="6"
+               required
+               autocomplete="off">
+      </div>
+
+      <div class="toggle" onclick="toggleMPIN()">Show MPIN</div>
+
+      <button type="submit" class="btn">Login</button>
+
+    </form>
+
+    <a href="/home" class="back">← Back to Home</a>
+
+  </div>
+
+  <script>
+    function toggleMPIN() {
+      const input = document.getElementById("mpin");
+      const toggleText = document.querySelector(".toggle");
+      
+      if (input.type === "password") {
+        input.type = "text";
+        toggleText.textContent = "Hide MPIN";
+      } else {
+        input.type = "password";
+        toggleText.textContent = "Show MPIN";
+      }
+    }
+  </script>
+
+</body>
+</html>

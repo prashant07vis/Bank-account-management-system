@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="passbook-container">
+    <h2 class="title">Bank Passbook</h2>
+
+    <div class="passbook-card">
+        <h3>Account Information</h3>
+
+        <table class="passbook-table">
+            <tr>
+                <td><strong>Account Number</strong></td>
+                <td>{{ data[0] }}</td>
+            </tr>
+            <tr>
+                <td><strong>CIF Number</strong></td>
+                <td>{{ data[1] }}</td>
+            </tr>
+            <tr>
+                <td><strong>Account Holder</strong></td>
+                <td>{{ data[2] }} {{ data[3] }}</td>
+            </tr>
+            <tr>
+                <td><strong>Father's Name</strong></td>
+                <td>{{ data[4] }}</td>
+            </tr>
+            <tr>
+                <td><strong>Date of Birth</strong></td>
+                <td>{{ data[5] }}</td>
+            </tr>
+            <tr>
+                <td><strong>Address</strong></td>
+                <td>{{ data[6] }}</td>
+            </tr>
+            <tr>
+                <td><strong>Mobile Number</strong></td>
+                <td>{{ data[7] }}</td>
+            </tr>
+            <tr>
+                <td><strong>Nominee</strong></td>
+                <td>{{ data[8] }} <span class="nominee-relation">({{ data[9] }})</span></td>
+            </tr>
+            <tr class="balance-row">
+                <td><strong>Current Balance</strong></td>
+                <td>₹{{ "{:,.2f}".format(data[10]) }}</td>
+            </tr>
+            <tr>
+                <td><strong>Account Created On</strong></td>
+                <td>{{ data[11] }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+</div>
+
+<style>
+    .passbook-container {
+        padding: 20px 15px;
+        max-width: 650px;
+        margin: 0 auto;
+    }
+
+    .title {
+        text-align: center;
+        margin: 30px 0 20px;
+        font-size: 2.2rem;
+        color: #e2e8f0;
+        font-weight: 600;
+    }
+
+    .passbook-card {
+        background: #1e293b;
+        border-radius: 16px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        padding: 35px 30px;
+        margin-bottom: 30px;
+    }
+
+    .passbook-card h3 {
+        text-align: center;
+        color: #93c5fd;
+        margin-bottom: 25px;
+        font-size: 1.5rem;
+    }
+
+    .passbook-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .passbook-table td {
+        padding: 14px 10px;
+        border-bottom: 1px solid #334155;
+        vertical-align: top;
+    }
+
+    .passbook-table td:first-child {
+        color: #93c5fd;
+        font-weight: 500;
+        width: 38%;
+    }
+
+    .balance-row {
+        background: rgba(34, 197, 94, 0.1);
+        border-radius: 8px;
+        margin-top: 8px;
+    }
+
+    .balance-row td {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #22c55e;
+        border: none;
+        padding: 16px 10px;
+    }
+
+    .nominee-relation {
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+
+    .back-btn {
+        display: block;
+        width: 240px;
+        margin: 20px auto;
+        padding: 12px 20px;
+        background: #3b82f6;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .passbook-card {
+            padding: 25px 20px;
+        }
+        .title {
+            font-size: 1.9rem;
+        }
+        .passbook-table td {
+            padding: 12px 8px;
+            font-size: 0.97rem;
+        }
+    }
+</style>
+
+{% endblock %}

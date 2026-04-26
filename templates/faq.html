@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bharat Bank – Frequently Asked Questions</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --gradient: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      --card: rgba(30, 41, 59, 0.65);
+      --border: rgba(96, 165, 250, 0.25);
+      --accent: #60a5fa;
+      --accent-light: #93c5fd;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --success: #22c55e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--gradient);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      background-attachment: fixed;
+      line-height: 1.7;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.45);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.8rem;
+    }
+
+    .subtitle {
+      color: var(--text-light);
+      font-size: 1.15rem;
+    }
+
+    .faq-item {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(96,165,250,0.15);
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .question {
+      font-size: 1.28rem;
+      font-weight: 600;
+      color: var(--accent-light);
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .question i {
+      color: var(--accent);
+      font-size: 1.4rem;
+    }
+
+    .answer {
+      font-size: 1.05rem;
+      color: var(--text-light);
+      padding-left: 2.2rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 2.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.05rem;
+      transition: all 0.3s;
+    }
+
+    .back-link:hover {
+      color: var(--accent-light);
+      transform: translateX(-4px);
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 2rem 1.6rem;
+      }
+      h1 {
+        font-size: 2.6rem;
+      }
+      .question {
+        font-size: 1.18rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>Frequently Asked Questions</h1>
+      <p class="subtitle">Quick answers to the most common queries</p>
+    </div>
+
+    <div class="faq-item">
+      <div class="question">
+        <i class="fas fa-user-plus"></i>
+        How do I create a bank account?
+      </div>
+      <div class="answer">
+        From the main menu, click "Create Account" and complete the registration form with your personal details. Once submitted, your account will be created instantly.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="question">
+        <i class="fas fa-arrow-down"></i>
+        How can I deposit money into my account?
+      </div>
+      <div class="answer">
+        Log in to your account → go to the Dashboard → select "Deposit" → enter the amount and confirm with your MPIN.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="question">
+        <i class="fas fa-hand-holding-dollar"></i>
+        How do I apply for a loan?
+      </div>
+      <div class="answer">
+        After logging in, navigate to "Apply Loan" from the dashboard, fill in the required details (loan type, amount, purpose), and submit. The status can be tracked under "Loan Status".
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="question">
+        <i class="fas fa-key"></i>
+        What is MPIN and how is it used?
+      </div>
+      <div class="answer">
+        MPIN is your secure 6-digit Mobile Personal Identification Number. It is required to authenticate transactions such as withdrawals, transfers, deposits, and loan applications.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="question">
+        <i class="fas fa-lock"></i>
+        What should I do if my account gets locked?
+      </div>
+      <div class="answer">
+        Account locking usually occurs after multiple incorrect MPIN attempts. Contact the bank administrator immediately (via the admin dashboard or support) to unlock it.
+      </div>
+    </div>
+
+    <a href="/home" class="back-link">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+
+  </div>
+
+</body>
+</html>

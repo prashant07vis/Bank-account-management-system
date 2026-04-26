@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-container">
+
+<h2 class="title">Lock / Unlock Account</h2>
+
+<div class="form-container">
+
+<form method="POST" class="lock-form">
+
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+<div class="form-group">
+
+<label>Account Number</label>
+
+<input 
+type="text"
+name="account"
+id="account"
+placeholder="Enter Account Number"
+required
+autocomplete="off"
+onkeyup="getAccountName()"
+>
+
+<p id="account_name" class="account-info"></p>
+
+</div>
+
+<div class="buttons">
+
+<button type="submit" class="lock-btn" name="action" value="lock">
+🔒 Lock
+</button>
+
+<button type="submit" class="unlock-btn" name="action" value="unlock">
+🔓 Unlock
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+<div class="back-section">
+
+<a href="/admin_dashboard" class="back-btn">
+
+<i class="fa-solid fa-arrow-left"></i>
+Back to Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+.page-container{
+min-height:100vh;
+padding:40px 15px;
+display:flex;
+flex-direction:column;
+align-items:center;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+}
+
+.title{
+text-align:center;
+font-size:28px;
+color:#93c5fd;
+margin-bottom:30px;
+}
+
+.form-container{
+display:flex;
+justify-content:center;
+width:100%;
+}
+
+.lock-form{
+background:#1e293b;
+padding:35px;
+border-radius:12px;
+box-shadow:0 8px 25px rgba(0,0,0,0.5);
+width:100%;
+max-width:380px;
+border:1px solid rgba(147,197,253,0.15);
+}
+
+.form-group{
+margin-bottom:20px;
+}
+
+.form-group label{
+display:block;
+color:#cbd5e1;
+margin-bottom:6px;
+font-size:14px;
+}
+
+.lock-form input{
+width:100%;
+padding:12px;
+border-radius:8px;
+font-size:15px;
+background:#0f172a;
+border:1px solid #334155;
+color:white;
+}
+
+.lock-form input:focus{
+outline:none;
+border-color:#60a5fa;
+box-shadow:0 0 0 2px rgba(96,165,250,0.2);
+}
+
+.account-info{
+margin-top:8px;
+font-size:14px;
+font-weight:500;
+min-height:18px;
+}
+
+.valid{
+color:#22c55e;
+}
+
+.invalid{
+color:#ef4444;
+}
+
+.buttons{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.lock-btn,
+.unlock-btn{
+flex:1;
+border:none;
+padding:12px;
+border-radius:8px;
+cursor:pointer;
+font-size:15px;
+font-weight:600;
+}
+
+.lock-btn{
+background:#ef4444;
+color:white;
+}
+
+.lock-btn:hover{
+background:#dc2626;
+}
+
+.unlock-btn{
+background:#22c55e;
+color:white;
+}
+
+.unlock-btn:hover{
+background:#16a34a;
+}
+
+.back-section{
+margin-top:30px;
+text-align:center;
+}
+
+.back-btn{
+display:inline-flex;
+align-items:center;
+gap:8px;
+padding:12px 22px;
+background:linear-gradient(135deg,#1e293b,#334155);
+border:1px solid #475569;
+border-radius:10px;
+color:#e2e8f0;
+text-decoration:none;
+font-size:15px;
+}
+
+.back-btn:hover{
+transform:translateY(-2px);
+}
+
+</style>
+
+<script>
+
+function getAccountName(){
+
+const acc=document.getElementById("account").value.trim();
+const nameBox=document.getElementById("account_name");
+
+nameBox.className="account-info";
+nameBox.innerHTML="";
+
+if(acc.length<4){
+return;
+}
+
+fetch(`/get_account/${acc}`)
+.then(response=>response.json())
+.then(data=>{
+
+if(data.status==="closed"){
+
+nameBox.innerHTML="This account cannot be locked or unlocked because it is already closed.";
+nameBox.className="account-info invalid";
+
+}
+else if(data.name==="Account not found"){
+
+nameBox.innerHTML="Invalid Account Number";
+nameBox.className="account-info invalid";
+
+}
+else{
+
+nameBox.innerHTML=`Account Holder: ${data.name}`;
+nameBox.className="account-info valid";
+
+}
+
+})
+.catch(()=>{
+nameBox.innerHTML="Error checking account";
+nameBox.className="account-info invalid";
+});
+
+}
+
+</script>
+
+{% endblock %}

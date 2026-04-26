@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-container">
+
+<div class="header-section">
+<div class="bank-logo">
+<i class="fa-solid fa-building-columns"></i>
+Bank Management System
+</div>
+
+<h1 class="page-title">Deposit Funds</h1>
+<p class="page-subtitle">Add money to your account securely</p>
+</div>
+
+<div class="form-card">
+
+<form method="POST" action="/deposit" id="depositForm">
+
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+<div class="form-field">
+
+<label class="field-label">Amount (₹)</label>
+
+<div class="input-wrapper">
+<i class="fa-solid fa-rupee-sign icon-left"></i>
+
+<input
+type="number"
+id="amount"
+name="amount"
+placeholder="Enter amount"
+min="1"
+max="100000"
+required
+>
+
+</div>
+
+<small class="input-hint">
+Min ₹1 • Max ₹1,00,000 per transaction
+</small>
+
+<div id="amount-error" class="amount-error"></div>
+<div id="amount-words" class="amount-words"></div>
+
+</div>
+
+<button class="submit-btn">
+<i class="fa-solid fa-arrow-down"></i>
+Deposit Now
+</button>
+
+</form>
+
+<div class="back-section">
+<a href="/dashboard" class="back-btn">
+<i class="fa-solid fa-arrow-left"></i>
+Back to Dashboard
+</a>
+</div>
+
+</div>
+</div>
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:Inter, sans-serif;
+}
+
+.page-container{
+min-height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+padding:40px 20px;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+}
+
+.header-section{
+text-align:center;
+margin-bottom:30px;
+}
+
+.bank-logo{
+font-size:26px;
+font-weight:700;
+color:#93c5fd;
+margin-bottom:10px;
+}
+
+.page-title{
+font-size:32px;
+color:#e2e8f0;
+margin-bottom:6px;
+}
+
+.page-subtitle{
+color:#94a3b8;
+}
+
+.form-card{
+background:#1e293b;
+padding:30px;
+border-radius:16px;
+width:100%;
+max-width:520px;
+border:1px solid rgba(255,255,255,0.05);
+box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+
+.form-field{
+margin-bottom:25px;
+}
+
+.field-label{
+display:block;
+margin-bottom:8px;
+color:#cbd5f5;
+}
+
+.input-wrapper{
+position:relative;
+}
+
+.icon-left{
+position:absolute;
+left:14px;
+top:50%;
+transform:translateY(-50%);
+color:#93c5fd;
+}
+
+input{
+width:100%;
+height:48px;
+padding-left:42px;
+background:#0f172a;
+border:1px solid #334155;
+border-radius:10px;
+color:white;
+font-size:16px;
+}
+
+input:focus{
+outline:none;
+border-color:#60a5fa;
+}
+
+.input-hint{
+font-size:13px;
+color:#94a3b8;
+margin-top:5px;
+display:block;
+}
+
+.amount-error{
+color:#f87171;
+margin-top:6px;
+font-size:14px;
+}
+
+.amount-words{
+color:#6ee7b7;
+margin-top:8px;
+font-style:italic;
+}
+
+.submit-btn{
+width:100%;
+height:48px;
+background:linear-gradient(90deg,#10b981,#34d399);
+border:none;
+border-radius:10px;
+color:white;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+}
+
+.submit-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 25px rgba(16,185,129,0.4);
+}
+
+.back-section{
+margin-top:28px;
+text-align:center;
+}
+
+.back-btn{
+display:inline-flex;
+align-items:center;
+gap:10px;
+padding:12px 22px;
+font-size:15px;
+font-weight:500;
+color:#e2e8f0;
+text-decoration:none;
+background:linear-gradient(135deg,#1e293b,#334155);
+border:1px solid #475569;
+border-radius:10px;
+transition:all 0.25s ease;
+box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+
+.back-btn:hover{
+background:linear-gradient(135deg,#334155,#475569);
+transform:translateY(-2px);
+}
+
+</style>
+
+<script>
+
+function numberToWords(num){
+
+if(num===0) return "Zero Rupees";
+
+const ones=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten",
+"Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+
+const tens=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+
+function twoDigit(n){
+if(n<20) return ones[n];
+return tens[Math.floor(n/10)]+" "+ones[n%10];
+}
+
+function threeDigit(n){
+
+let str="";
+
+if(Math.floor(n/100)>0){
+str+=ones[Math.floor(n/100)]+" Hundred ";
+n=n%100;
+}
+
+if(n>0){
+str+=twoDigit(n);
+}
+
+return str.trim();
+}
+
+let crore=Math.floor(num/10000000);
+num%=10000000;
+
+let lakh=Math.floor(num/100000);
+num%=100000;
+
+let thousand=Math.floor(num/1000);
+num%=1000;
+
+let hundred=num;
+
+let result="";
+
+if(crore) result+=threeDigit(crore)+" Crore ";
+if(lakh) result+=threeDigit(lakh)+" Lakh ";
+if(thousand) result+=threeDigit(thousand)+" Thousand ";
+if(hundred) result+=threeDigit(hundred)+" ";
+
+return result+"Rupees Only";
+
+}
+
+const amountInput=document.getElementById("amount");
+const words=document.getElementById("amount-words");
+const error=document.getElementById("amount-error");
+const form=document.getElementById("depositForm");
+
+amountInput.addEventListener("input",()=>{
+
+let value=parseInt(amountInput.value)||0;
+
+if(value>100000){
+
+error.textContent="Max one lakh rupees deposit allowed at a time.";
+words.textContent="";
+
+}else{
+
+error.textContent="";
+
+if(value>0){
+words.textContent=numberToWords(value);
+}else{
+words.textContent="";
+}
+
+}
+
+});
+
+form.addEventListener("submit",(e)=>{
+
+let value=parseInt(amountInput.value)||0;
+
+if(value>100000){
+
+e.preventDefault();
+error.textContent="Max one lakh rupees deposit allowed at a time.";
+
+}
+
+});
+
+</script>
+
+{% endblock %}

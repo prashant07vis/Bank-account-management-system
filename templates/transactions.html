@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>All Bank Transactions</h2>
+
+{% if txns %}
+    <table class="transactions-table">
+        <thead>
+            <tr>
+                <th>Account Holder</th>
+                <th>Account Number</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Date & Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in txns %}
+            <tr class="transaction-row">
+                <td>{{ t[0] }} {{ t[1] }}</td>
+                <td>{{ t[2] }}</td>
+                <td class="type-{{ t[3]|lower }}">{{ t[3] }}</td>
+                <td class="amount {% if t[3]|lower == 'credit' or t[3]|lower == 'deposit' %}positive{% else %}negative{% endif %}">
+                    {% if t[3]|lower in ['credit', 'deposit'] %}+{% endif %}₹{{ "{:,.2f}".format(t[4]) }}
+                </td>
+                <td>{{ t[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="empty-state">
+        <p>No transactions recorded yet.</p>
+    </div>
+{% endif %}
+
+<a href="/admin_dashboard" class="back-link">← Back to Dashboard</a>
+
+<style>
+    .transactions-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0 2rem;
+        font-size: 0.96rem;
+        background: #0f172a;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .transactions-table thead {
+        background: #1e293b;
+    }
+
+    .transactions-table th,
+    .transactions-table td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #334155;
+    }
+
+    .transactions-table th {
+        color: #93c5fd;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.82rem;
+        letter-spacing: 0.4px;
+    }
+
+    .transaction-row:hover {
+        background-color: #1e293b;
+        transition: background-color 0.12s;
+    }
+
+    .amount {
+        text-align: right;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 500;
+    }
+
+    .amount.positive {
+        color: #4ade80;
+    }
+
+    .amount.negative {
+        color: #f87171;
+    }
+
+    .type-deposit,
+    .type-credit {
+        color: #4ade80;
+        font-weight: 500;
+    }
+
+    .type-withdrawal,
+    .type-debit {
+        color: #f87171;
+        font-weight: 500;
+    }
+
+    .type-transfer {
+        color: #fbbf24;
+        font-weight: 500;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+        color: #94a3b8;
+        font-size: 1.1rem;
+        background: #0f172a;
+        border-radius: 8px;
+        border: 1px dashed #334155;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 1.5rem;
+        color: #93c5fd;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+        color: #60a5fa;
+    }
+</style>
+
+{% endblock %}

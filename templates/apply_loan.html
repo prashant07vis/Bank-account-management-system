@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-container">
+
+<div class="header-section">
+
+<div class="bank-logo">
+<i class="fa-solid fa-building-columns"></i>
+Bharat Bank
+</div>
+
+<h1 class="page-title">Apply for Loan</h1>
+
+<p class="page-subtitle">
+Get instant approval up to your eligible limit
+</p>
+
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="messages-container">
+
+{% for category, message in messages %}
+<div class="alert alert-{{ category }}">
+{{ message }}
+</div>
+{% endfor %}
+
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="form-card">
+
+<div class="loan-info">
+
+<div class="max-loan-label">
+Maximum Loan Eligible
+</div>
+
+<div class="max-loan-value">
+₹{{ "%.2f"|format(max_loan) }}
+</div>
+
+</div>
+
+<form method="POST" action="/apply_loan">
+
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+<div class="form-field">
+
+<label class="field-label">
+Loan Amount
+</label>
+
+<div class="input-wrapper">
+
+<i class="fa-solid fa-rupee-sign icon-left"></i>
+
+<input
+type="number"
+id="amount"
+name="amount"
+placeholder="Enter loan amount"
+min="1"
+required
+autocomplete="off"
+>
+
+</div>
+
+</div>
+
+<!-- EMI RESULT -->
+
+<div class="emi-box">
+
+<div class="emi-row">
+<span>Monthly EMI</span>
+<b id="emi">₹0</b>
+</div>
+
+<div class="emi-row">
+<span>Total Interest</span>
+<b id="interest">₹0</b>
+</div>
+
+<div class="emi-row">
+<span>Total Payable</span>
+<b id="total">₹0</b>
+</div>
+
+</div>
+
+<button type="submit" class="submit-btn">
+
+<i class="fa-solid fa-hand-holding-dollar"></i>
+Apply for Loan
+
+</button>
+
+</form>
+
+<div class="back-section">
+
+<a href="/dashboard" class="back-btn">
+
+<i class="fa-solid fa-arrow-left"></i>
+Back to Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+.page-container{
+min-height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+padding:2rem 1rem;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+}
+
+.header-section{
+text-align:center;
+margin-bottom:2.5rem;
+max-width:520px;
+}
+
+.bank-logo{
+font-size:1.9rem;
+font-weight:700;
+color:#93c5fd;
+margin-bottom:1rem;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+}
+
+.page-title{
+font-size:2.3rem;
+color:#dbeafe;
+margin-bottom:8px;
+}
+
+.page-subtitle{
+color:#cbd5e1;
+}
+
+.form-card{
+background:#1e293b;
+border-radius:16px;
+padding:40px;
+width:100%;
+max-width:520px;
+border:1px solid rgba(147,197,253,0.16);
+box-shadow:0 10px 40px rgba(0,0,0,0.45);
+}
+
+.loan-info{
+text-align:center;
+margin-bottom:2rem;
+padding-bottom:1rem;
+border-bottom:1px solid rgba(148,163,184,0.2);
+}
+
+.max-loan-label{
+font-size:1rem;
+color:#94a3b8;
+}
+
+.max-loan-value{
+font-size:2.5rem;
+font-weight:800;
+color:#10b981;
+}
+
+.form-field{
+margin-bottom:25px;
+}
+
+.field-label{
+display:block;
+margin-bottom:10px;
+color:#e2e8f0;
+}
+
+.input-wrapper{
+position:relative;
+}
+
+.icon-left{
+position:absolute;
+left:18px;
+top:50%;
+transform:translateY(-50%);
+color:#34d399;
+}
+
+input{
+width:100%;
+padding:15px 15px 15px 45px;
+background:#0f172a;
+border:1px solid #475569;
+border-radius:12px;
+color:white;
+font-size:18px;
+}
+
+.emi-box{
+margin-top:20px;
+padding:18px;
+background:#020617;
+border-radius:10px;
+border:1px solid #334155;
+}
+
+.emi-row{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+color:#e2e8f0;
+}
+
+.submit-btn{
+width:100%;
+padding:15px;
+margin-top:20px;
+background:linear-gradient(90deg,#10b981,#34d399);
+border:none;
+border-radius:12px;
+color:white;
+font-size:18px;
+font-weight:600;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+}
+
+.back-section{
+text-align:center;
+margin-top:25px;
+}
+
+.back-btn{
+display:inline-flex;
+align-items:center;
+gap:10px;
+padding:12px 22px;
+font-size:15px;
+font-weight:500;
+color:#e2e8f0;
+text-decoration:none;
+background:linear-gradient(135deg,#1e293b,#334155);
+border:1px solid #475569;
+border-radius:10px;
+}
+
+</style>
+
+<script>
+
+const interestRate = 10;  
+const tenureMonths = 24;
+
+document.getElementById("amount").addEventListener("input", function(){
+
+let P = parseFloat(this.value);
+
+if(!P){
+document.getElementById("emi").innerText="₹0";
+document.getElementById("interest").innerText="₹0";
+document.getElementById("total").innerText="₹0";
+return;
+}
+
+let r = interestRate / 12 / 100;
+let n = tenureMonths;
+
+let emi = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+
+let total = emi*n;
+let interest = total-P;
+
+document.getElementById("emi").innerText="₹"+emi.toFixed(2);
+document.getElementById("interest").innerText="₹"+interest.toFixed(2);
+document.getElementById("total").innerText="₹"+total.toFixed(2);
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spending Limits - Bharat Bank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+        }
+
+        .glass {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .limit-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px 24px;
+            transition: all 0.2s;
+        }
+        .limit-card:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(99,102,241,0.4);
+        }
+
+        .range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            outline: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: #6366f1;
+            cursor: pointer;
+            border: 3px solid #1e1b4b;
+            box-shadow: 0 0 0 2px #6366f1;
+            transition: transform 0.15s;
+        }
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        .range-slider::-moz-range-thumb {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: #6366f1;
+            cursor: pointer;
+            border: 3px solid #1e1b4b;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            transition: all 0.2s;
+        }
+        .save-btn:hover {
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+        }
+        .save-btn:active { transform: translateY(0); }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 10px; border-radius: 999px;
+            font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+        }
+
+        .toast {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1e293b; color: white;
+            padding: 12px 24px; border-radius: 12px;
+            font-size: 14px; z-index: 9999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+            opacity: 0; white-space: nowrap;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="py-10 px-4">
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<div class="max-w-2xl mx-auto">
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 mb-4">
+            <i class="fa-solid fa-chart-line text-indigo-400 text-2xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-white">Spending Limits</h1>
+        <p class="text-slate-400 mt-2">
+            Control how much your card can spend per day and per month
+        </p>
+        <div class="flex items-center justify-center gap-2 mt-3">
+            <span class="badge bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <i class="fa-solid fa-shield-halved"></i> Verified Session
+            </span>
+            <span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <i class="fa-solid fa-credit-card"></i> {{ variant or "Debit Card" }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Current POS Limit Info -->
+    <div class="glass rounded-2xl p-5 mb-6 flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-store text-amber-400"></i>
+        </div>
+        <div class="flex-1">
+            <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Current POS / Daily Limit</p>
+            <p class="text-2xl font-bold text-white">
+                ₹{{ "{:,.0f}".format(pos_limit or 0) }}
+            </p>
+        </div>
+        <div class="text-right">
+            <p class="text-xs text-slate-500">Max allowed</p>
+            <p class="text-sm font-semibold text-slate-300">₹{{ "{:,.0f}".format(max_limit or 0) }}</p>
+        </div>
+    </div>
+
+    <!-- Limit Usage Bar -->
+    <div class="glass rounded-2xl p-5 mb-6">
+        <div class="flex justify-between items-center mb-3">
+            <span class="text-sm text-slate-400">Limit utilisation</span>
+            <span class="text-sm font-semibold text-white" id="utilizationPct">
+                {% if max_limit and max_limit > 0 %}
+                    {{ "{:.0f}".format((pos_limit / max_limit) * 100) }}%
+                {% else %}
+                    0%
+                {% endif %}
+            </span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill bg-gradient-to-r from-indigo-500 to-purple-500"
+                 id="utilizationBar"
+                 style="width: {% if max_limit and max_limit > 0 %}{{ [(pos_limit / max_limit) * 100, 100] | min }}%{% else %}0%{% endif %}">
+            </div>
+        </div>
+        <div class="flex justify-between mt-2">
+            <span class="text-xs text-slate-500">₹0</span>
+            <span class="text-xs text-slate-500">₹{{ "{:,.0f}".format(max_limit or 0) }}</span>
+        </div>
+    </div>
+
+    <!-- Set New Limit -->
+    <div class="glass rounded-2xl p-6 mb-6">
+        <h2 class="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-indigo-400"></i>
+            Set New Daily / POS Limit
+        </h2>
+        <p class="text-slate-500 text-sm mb-6">
+            This limit applies to all point-of-sale and online transactions per day.
+        </p>
+
+        <!-- Slider -->
+        {% set limit_pct = 0 %}
+        {% if max_limit and max_limit > 0 %}
+            {% set limit_pct = [(pos_limit / max_limit) * 100, 100] | min %}
+        {% endif %}
+        <div class="mb-6">
+            <input type="range"
+                   id="limitSlider"
+                   class="range-slider"
+                   min="0"
+                   max="{{ max_limit or 100000 }}"
+                   step="500"
+                   value="{{ pos_limit or 0 }}"
+                   oninput="updateSlider(this.value)"
+                   style="background: linear-gradient(to right, #6366f1 {{ limit_pct }}%, rgba(255,255,255,0.1) {{ limit_pct }}%)">
+        </div>
+
+        <!-- Amount Display -->
+        <div class="flex items-center gap-3 mb-6">
+            <div class="flex-1">
+                <label class="block text-xs text-slate-400 uppercase tracking-widest mb-1">New Limit (₹)</label>
+                <input type="number"
+                       id="limitInput"
+                       value="{{ pos_limit or 0 }}"
+                       min="0"
+                       max="{{ max_limit or 100000 }}"
+                       oninput="updateFromInput(this.value)"
+                       class="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-4 py-3
+                              text-white text-lg font-semibold focus:outline-none focus:border-indigo-500
+                              transition-colors">
+            </div>
+            <div class="flex flex-col gap-2 pt-5">
+                <button onclick="quickSet(0)"
+                        class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs text-slate-300 transition">
+                    ₹0
+                </button>
+                <button onclick="quickSet({{ max_limit or 0 }})"
+                        class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs text-slate-300 transition">
+                    Max
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Select Presets -->
+        <div class="mb-6">
+            <p class="text-xs text-slate-500 mb-2 uppercase tracking-widest">Quick presets</p>
+            <div class="flex flex-wrap gap-2" id="presetBtns">
+                {% set presets = [5000, 10000, 25000, 50000] %}
+                {% for p in presets %}
+                    {% if p <= (max_limit or 0) %}
+                    <button onclick="quickSet({{ p }})"
+                            class="preset-btn px-4 py-2 bg-slate-700/60 hover:bg-indigo-600/40 border border-slate-600
+                                   hover:border-indigo-500 rounded-xl text-sm text-slate-300 hover:text-white
+                                   transition-all font-medium">
+                        ₹{{ "{:,.0f}".format(p) }}
+                    </button>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Warning if 0 -->
+        <div id="zeroWarning"
+             class="hidden bg-amber-900/20 border border-amber-500/30 rounded-xl p-3 mb-5">
+            <p class="text-amber-300 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Setting limit to ₹0 will disable all POS/online transactions on this card.
+            </p>
+        </div>
+
+        <!-- Save Button -->
+        <button onclick="saveLimit()"
+                class="save-btn w-full py-4 rounded-2xl font-semibold text-white text-lg flex items-center justify-center gap-2"
+                id="saveBtn">
+            <i class="fa-solid fa-floppy-disk"></i> Save New Limit
+        </button>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+
+        <div class="limit-card">
+            <div class="flex items-center gap-3 mb-2">
+                <i class="fa-solid fa-store text-amber-400"></i>
+                <span class="text-sm font-semibold text-white">POS Transactions</span>
+            </div>
+            <p class="text-xs text-slate-400">
+                Controls in-store swipe/tap payments and online merchant transactions per day.
+            </p>
+        </div>
+
+        <div class="limit-card">
+            <div class="flex items-center gap-3 mb-2">
+                <i class="fa-solid fa-rotate text-sky-400"></i>
+                <span class="text-sm font-semibold text-white">Resets Daily</span>
+            </div>
+            <p class="text-xs text-slate-400">
+                Your spending counter resets at midnight every day. ATM withdrawals are separate.
+            </p>
+        </div>
+
+        <div class="limit-card">
+            <div class="flex items-center gap-3 mb-2">
+                <i class="fa-solid fa-lock text-emerald-400"></i>
+                <span class="text-sm font-semibold text-white">Instant Effect</span>
+            </div>
+            <p class="text-xs text-slate-400">
+                Changes take effect immediately after saving. No waiting period required.
+            </p>
+        </div>
+
+        <div class="limit-card">
+            <div class="flex items-center gap-3 mb-2">
+                <i class="fa-solid fa-shield text-purple-400"></i>
+                <span class="text-sm font-semibold text-white">Security Tip</span>
+            </div>
+            <p class="text-xs text-slate-400">
+                Set a lower limit when travelling or if you suspect your card details are compromised.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Back Button -->
+    <a href="/view_card"
+       class="block text-center py-4 rounded-2xl font-semibold text-slate-300
+              bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
+        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Card Management
+    </a>
+
+</div>
+
+
+<script>
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+const maxLimit  = {{ max_limit or 0 }};
+
+// ── Slider sync ────────────────────────────────────────────
+function updateSlider(val) {
+    val = Math.min(Math.max(0, Number(val)), maxLimit);
+    document.getElementById("limitInput").value = val;
+    updateSliderFill(val);
+    updateUtilization(val);
+    toggleZeroWarning(val);
+    highlightPreset(val);
+}
+
+function updateFromInput(val) {
+    val = Math.min(Math.max(0, Number(val)), maxLimit);
+    document.getElementById("limitSlider").value = val;
+    updateSliderFill(val);
+    updateUtilization(val);
+    toggleZeroWarning(val);
+    highlightPreset(val);
+}
+
+function updateSliderFill(val) {
+    const pct = maxLimit > 0 ? (val / maxLimit) * 100 : 0;
+    document.getElementById("limitSlider").style.background =
+        `linear-gradient(to right, #6366f1 ${pct}%, rgba(255,255,255,0.1) ${pct}%)`;
+}
+
+function updateUtilization(val) {
+    const pct = maxLimit > 0 ? Math.min((val / maxLimit) * 100, 100) : 0;
+    document.getElementById("utilizationBar").style.width = pct + "%";
+    document.getElementById("utilizationPct").textContent = Math.round(pct) + "%";
+}
+
+function toggleZeroWarning(val) {
+    const w = document.getElementById("zeroWarning");
+    if (Number(val) === 0) w.classList.remove("hidden");
+    else w.classList.add("hidden");
+}
+
+function quickSet(val) {
+    document.getElementById("limitSlider").value = val;
+    document.getElementById("limitInput").value  = val;
+    updateSliderFill(val);
+    updateUtilization(val);
+    toggleZeroWarning(val);
+    highlightPreset(val);
+}
+
+function highlightPreset(val) {
+    document.querySelectorAll(".preset-btn").forEach(btn => {
+        const btnVal = parseInt(btn.getAttribute("onclick").match(/\d+/)[0]);
+        if (btnVal === Number(val)) {
+            btn.classList.add("bg-indigo-600/50", "border-indigo-400", "text-white");
+            btn.classList.remove("bg-slate-700/60", "border-slate-600", "text-slate-300");
+        } else {
+            btn.classList.remove("bg-indigo-600/50", "border-indigo-400", "text-white");
+            btn.classList.add("bg-slate-700/60", "border-slate-600", "text-slate-300");
+        }
+    });
+}
+
+// ── Save ───────────────────────────────────────────────────
+function saveLimit() {
+    const limit = Number(document.getElementById("limitInput").value);
+
+    if (isNaN(limit) || limit < 0) {
+        showToast("Please enter a valid limit", true);
+        return;
+    }
+    if (limit > maxLimit) {
+        showToast(`Limit cannot exceed ₹${maxLimit.toLocaleString("en-IN")}`, true);
+        return;
+    }
+
+    const btn = document.getElementById("saveBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...';
+
+    fetch("/update_pos_limit_direct", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrfToken
+        },
+        body: new URLSearchParams({ limit: limit }).toString()
+    })
+    .then(res => {
+        if (res.redirected) { window.location.href = res.url; return; }
+        return res.json();
+    })
+    .then(data => {
+        if (!data) return;
+        if (data.success) {
+            showToast("✅ Spending limit updated successfully!");
+            btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Saved!';
+            btn.style.background = "linear-gradient(135deg, #16a34a, #15803d)";
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save New Limit';
+                btn.style.background = "";
+            }, 2500);
+        } else {
+            showToast(data.error || "Failed to update limit", true);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save New Limit';
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showToast("Network error. Please try again.", true);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save New Limit';
+    });
+}
+
+// ── Toast ──────────────────────────────────────────────────
+function showToast(msg, isError = false) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.style.borderColor = isError ? "#ef4444" : "#6366f1";
+    t.style.background  = isError ? "#450a0a"  : "#1e293b";
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// Init highlight on load
+document.addEventListener("DOMContentLoaded", () => {
+    highlightPreset({{ pos_limit or 0 }});
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="admin-container">
+
+  <h2 class="title">
+    <i class="fa-solid fa-user-shield"></i>
+    Admin Setup
+  </h2>
+
+  <form method="POST" class="admin-form" id="adminSetupForm" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Username -->
+    <div class="input-group">
+      <label for="username">Username</label>
+      <div class="input-box">
+        <i class="fa-solid fa-user icon"></i>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Enter Admin Username"
+          autocomplete="username"
+          required
+          minlength="4"
+          maxlength="30"
+        >
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="input-group">
+      <label for="password">Password</label>
+      <div class="input-box">
+        <i class="fa-solid fa-lock icon"></i>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter Password"
+          autocomplete="new-password"
+          required
+          minlength="8"
+        >
+        <button type="button" class="eye-btn" onclick="togglePassword('password', 'eye1')">
+          <i id="eye1" class="fa-solid fa-eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="input-group">
+      <label for="confirm_password">Confirm Password</label>
+      <div class="input-box">
+        <i class="fa-solid fa-lock icon"></i>
+        <input
+          type="password"
+          id="confirm_password"
+          name="confirm_password"
+          placeholder="Confirm Password"
+          autocomplete="new-password"
+          required
+          minlength="8"
+        >
+        <button type="button" class="eye-btn" onclick="togglePassword('confirm_password', 'eye2')">
+          <i id="eye2" class="fa-solid fa-eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Info / Warning -->
+    <div class="info-box">
+      <i class="fa-solid fa-key"></i>
+      <span>Admin Secret Number will be generated automatically after successful setup.</span>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" class="submit-btn" id="submitBtn">
+      <i class="fa-solid fa-circle-check"></i>
+      Create Admin Account
+    </button>
+
+    <!-- Optional: client-side feedback area -->
+    <div id="formMessage" class="form-message" style="display:none; margin-top:1rem; padding:12px; border-radius:8px;"></div>
+  </form>
+
+</div>
+
+<style>
+  .admin-container {
+    max-width: 440px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .title {
+    text-align: center;
+    font-size: 2.1rem;
+    margin-bottom: 2.5rem;
+    color: #93c5fd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .input-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    display: block;
+    color: #cbd5e1;
+  }
+
+  .input-box {
+    display: flex;
+    align-items: center;
+    background: #0f172a;
+    border: 1px solid #475569;
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .input-box:focus-within {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+  }
+
+  .input-box input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .icon {
+    margin-right: 0.8rem;
+    color: #60a5fa;
+    font-size: 1.1rem;
+  }
+
+  .eye-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0 0.5rem;
+  }
+
+  .eye-btn:hover {
+    color: #cbd5e1;
+  }
+
+  .info-box {
+    background: rgba(59, 130, 246, 0.12);
+    border-left: 4px solid #3b82f6;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #bfdbfe;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .submit-btn {
+    margin-top: 1.5rem;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+  }
+
+  .form-message.error {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid #ef4444;
+  }
+
+  .form-message.success {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+    border: 1px solid #22c55e;
+  }
+
+  @media (max-width: 480px) {
+    .admin-container { padding: 0 1.2rem; }
+    .title { font-size: 1.8rem; }
+  }
+</style>
+
+<script>
+  function togglePassword(fieldId, eyeId) {
+    const input = document.getElementById(fieldId);
+    const icon = document.getElementById(eyeId);
+
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+
+  // Simple client-side password match check
+  document.getElementById("adminSetupForm").addEventListener("submit", function(e) {
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm_password").value;
+    const messageDiv = document.getElementById("formMessage");
+
+    if (password !== confirm) {
+      e.preventDefault();
+      messageDiv.textContent = "Passwords do not match. Please check and try again.";
+      messageDiv.className = "form-message error";
+      messageDiv.style.display = "block";
+      return;
+    }
+
+    // Optional: you can add more checks (length, complexity) here
+  });
+</script>
+
+{% endblock %}

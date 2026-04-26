@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Verify Card Access - Bharat Bank</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+.otp-box {
+  width: 45px;
+  height: 55px;
+  text-align: center;
+  font-size: 22px;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  outline: none;
+  transition: 0.3s;
+}
+
+.otp-box:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 10px #60a5fa;
+}
+</style>
+
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 min-h-screen flex items-center justify-center">
+
+<div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 w-full max-w-md shadow-2xl text-white">
+
+  <h2 class="text-2xl font-bold text-center mb-2">💳 Secure Card Access</h2>
+  <p class="text-center text-gray-300 mb-6">Enter MPIN and OTP to view your card</p>
+
+  <!-- FLASH -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="mb-3 p-2 rounded text-sm 
+        {% if category=='danger' %} bg-red-500/20 text-red-300
+        {% elif category=='success' %} bg-green-500/20 text-green-300
+        {% else %} bg-blue-500/20 text-blue-300 {% endif %}">
+          {{ msg }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" onsubmit="combineOTP()">
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- MPIN -->
+    <input type="password" name="mpin" placeholder="Enter MPIN"
+      class="w-full mb-4 p-2 rounded bg-white/10 border border-white/20 text-white outline-none"
+      required>
+
+    <!-- OTP BOXES -->
+    <div class="flex justify-between mb-4">
+      <input type="text" maxlength="1" class="otp-box">
+      <input type="text" maxlength="1" class="otp-box">
+      <input type="text" maxlength="1" class="otp-box">
+      <input type="text" maxlength="1" class="otp-box">
+      <input type="text" maxlength="1" class="otp-box">
+      <input type="text" maxlength="1" class="otp-box">
+    </div>
+
+    <input type="hidden" name="otp" id="otp">
+
+    <button type="submit"
+      class="w-full bg-gradient-to-r from-blue-500 to-purple-500 py-2 rounded-lg font-semibold hover:scale-105 transition">
+      Verify & View Card
+    </button>
+
+  </form>
+
+  <!-- TIMER -->
+  <p class="text-center text-sm text-gray-400 mt-4">
+    ⏳ Expires in <span id="timer" class="text-yellow-400 font-semibold"></span>
+  </p>
+
+  <!-- RESEND -->
+  <div class="text-center mt-3">
+    <a id="resendBtn" href="/request_card_view_otp"
+       class="text-blue-400 opacity-50 pointer-events-none">
+       Resend OTP
+    </a>
+  </div>
+
+</div>
+
+<script>
+const inputs = document.querySelectorAll(".otp-box");
+
+inputs[0].focus();
+
+// move + number only
+inputs.forEach((input, index) => {
+
+  input.addEventListener("input", function() {
+    this.value = this.value.replace(/[^0-9]/g,'');
+
+    if (this.value.length === 1 && index < inputs.length - 1) {
+      inputs[index + 1].focus();
+    }
+  });
+
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Backspace" && !input.value && index > 0) {
+      inputs[index - 1].focus();
+    }
+  });
+});
+
+// combine OTP
+function combineOTP() {
+  let otp = "";
+  inputs.forEach(input => otp += input.value);
+  document.getElementById("otp").value = otp;
+}
+
+// TIMER (important key)
+let expiry = "{{ session.get('card_otp_expiry') }}";
+
+if (expiry) {
+  let endTime = new Date(expiry).getTime();
+
+  let timerInterval = setInterval(function () {
+
+    let now = new Date().getTime();
+    let distance = endTime - now;
+
+    if (distance <= 0) {
+      clearInterval(timerInterval);
+      document.getElementById("timer").innerHTML = "Expired";
+
+      let btn = document.getElementById("resendBtn");
+      btn.classList.remove("opacity-50","pointer-events-none");
+
+      return;
+    }
+
+    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    let minutes = Math.floor((distance / (1000 * 60)));
+
+    document.getElementById("timer").innerHTML =
+      minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+  }, 1000);
+}
+</script>
+
+</body>
+</html>

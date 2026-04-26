@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bharat Bank – About Us</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --gradient: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      --glass: rgba(30, 41, 59, 0.38);
+      --border: rgba(96, 165, 250, 0.16);
+      --accent: #60a5fa;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--gradient);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      background-attachment: fixed;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 5.5rem 0 4.5rem;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.8rem, 8vw, 5.2rem);
+      font-weight: 700;
+      background: linear-gradient(90deg, #60a5fa, #a5b4fc, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 50px rgba(96, 165, 250, 0.4);
+      letter-spacing: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.35rem;
+      color: var(--text-light);
+      max-width: 720px;
+      margin: 0 auto 1rem;
+    }
+
+    .about-card {
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 3.2rem 2.8rem;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.42);
+      margin: 0 auto 5rem;
+      max-width: 860px;
+    }
+
+    .about-card p {
+      font-size: 1.12rem;
+      margin-bottom: 1.8rem;
+      color: var(--text-light);
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0 1rem;
+    }
+
+    .value-item {
+      text-align: center;
+      padding: 1.8rem 1.2rem;
+      background: rgba(96, 165, 250, 0.08);
+      border-radius: 1rem;
+      border: 1px solid rgba(96, 165, 250, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .value-item:hover {
+      transform: translateY(-6px);
+      background: rgba(96, 165, 250, 0.12);
+      border-color: rgba(96, 165, 250, 0.3);
+    }
+
+    .value-icon {
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+
+    .value-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 0.6rem;
+    }
+
+    .value-desc {
+      font-size: 0.98rem;
+      color: var(--text-light);
+    }
+
+    footer {
+      text-align: center;
+      padding: 4rem 0 3rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      border-top: 1px solid rgba(96,165,250,0.12);
+    }
+
+    @media (max-width: 640px) {
+      header { padding: 4.5rem 0 3.5rem; }
+      h1 { font-size: clamp(2.4rem, 10vw, 4.2rem); }
+      .about-card { padding: 2.4rem 1.8rem; }
+      .value-icon { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>About Bharat Bank</h1>
+      <p class="subtitle">Modern Banking. Secure. Simple. Trusted.</p>
+    </header>
+
+    <div class="about-card">
+      <p>
+        <span class="highlight">Bharat Bank</span> is a forward-thinking digital banking platform built to deliver 
+        secure, reliable, and efficient financial services in today's fast-paced world.
+      </p>
+
+      <p>
+        Our system empowers customers to seamlessly manage accounts, execute real-time transactions, 
+        apply for and track loans, and monitor financial activity — all within a highly secure and 
+        user-friendly environment.
+      </p>
+
+      <p>
+        Designed as an educational yet production-grade simulation, Bharat Bank mirrors real-world 
+        banking operations while prioritizing simplicity, transparency, and top-tier security practices.
+      </p>
+
+      <div class="values-grid">
+        <div class="value-item">
+          <div class="value-icon">🔒</div>
+          <div class="value-title">Security First</div>
+          <div class="value-desc">Advanced encryption, secure authentication, and strict access controls protect every interaction.</div>
+        </div>
+
+        <div class="value-item">
+          <div class="value-icon">⚡</div>
+          <div class="value-title">Efficiency</div>
+          <div class="value-desc">Fast, intuitive interface for quick account management and transactions.</div>
+        </div>
+
+        <div class="value-item">
+          <div class="value-icon">💡</div>
+          <div class="value-title">Innovation</div>
+          <div class="value-desc">Leveraging modern technology to reimagine accessible banking for everyone.</div>
+        </div>
+      </div>
+
+      <p style="text-align: center; font-style: italic; color: #cbd5e1; margin-top: 2.5rem; font-size: 1.1rem;">
+        Transparency, trust, and technological excellence — the foundation of Bharat Bank.
+      </p>
+    </div>
+
+    <footer>
+      <p>© 2025–2026 Bharat Bank • Secure Banking for a Digital India</p>
+    </footer>
+  </div>
+
+</body>
+</html>

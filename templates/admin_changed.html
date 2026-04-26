@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Updated • Bharat Bank</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #0f172a, #1e293b, #1e40af);
+      --card: rgba(15, 23, 42, 0.92);
+      --accent: #3b82f6;
+      --accent-dark: #2563eb;
+      --success: #22c55e;
+      --gold: #facc15;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: rgba(255,255,255,0.08);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px 28px;
+      width: 100%;
+      max-width: 460px;
+      text-align: center;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.55);
+      backdrop-filter: blur(16px);
+      animation: fadeInUp 0.7s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-icon {
+      font-size: 5rem;
+      color: var(--success);
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: var(--success);
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+
+    .admin-code-box {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .admin-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .admin-value {
+      font-size: 1.5rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(59,130,246,0.2);
+      color: var(--accent);
+      border: none;
+      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      border-radius: 12px;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(59,130,246,0.5);
+    }
+
+    .security-note {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #f87171;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="success-icon">✅</div>
+
+  <h1>Admin Updated Successfully</h1>
+
+  <p class="subtitle">
+    Your administrator credentials have been updated.<br>
+    Keep your new Admin No safe.
+  </p>
+
+  <div class="admin-code-box">
+    <div class="admin-label">New Admin Number</div>
+    <div class="admin-value">{{ admin_no }}</div>
+
+    <button class="copy-btn" onclick="copyAdminNo()">
+      <i class="fas fa-copy"></i>
+    </button>
+  </div>
+
+  <!-- ✅ FIXED BUTTON -->
+  <a href="/home" class="btn">
+    ⬅ Back to Main Menu
+  </a>
+
+  <p class="security-note">
+    <i class="fas fa-shield-halved"></i>
+    Never share this number with anyone.
+  </p>
+
+</div>
+
+<script>
+function copyAdminNo(){
+  const adminNo = "{{ admin_no }}";
+  navigator.clipboard.writeText(adminNo);
+  alert("Admin Number copied!");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View CVV - Bharat Bank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        .cvv-box {
+            font-size: 48px;
+            letter-spacing: 20px;
+            text-align: center;
+            padding: 32px 24px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(16px);
+            font-family: 'Courier New', monospace;
+            min-height: 92px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+            user-select: none;
+        }
+        
+        .revealed {
+            background: rgba(16, 185, 129, 0.18);
+            border-color: #10b981;
+            box-shadow: 0 0 35px rgba(16, 185, 129, 0.5);
+        }
+
+        .blur {
+            filter: blur(10px);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 min-h-screen flex items-center justify-center text-white">
+
+<div class="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-10 w-full max-w-md shadow-2xl text-center">
+
+    <div class="flex justify-center mb-6">
+        <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center">
+            <i class="fa-solid fa-shield-halved text-5xl text-emerald-400"></i>
+        </div>
+    </div>
+    
+    <h2 class="text-3xl font-bold mb-2">CVV Verification</h2>
+    <p class="text-gray-300 mb-10">Your CVV is highly sensitive. View it securely.</p>
+
+    <!-- CVV Display -->
+    <div id="cvvBox" class="cvv-box blur">
+        ••••
+    </div>
+
+    <button onclick="revealCVV()" 
+            id="revealBtn"
+            class="w-full mt-8 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 
+                   py-4 rounded-2xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-3 active:scale-95">
+        <i id="btnIcon" class="fa-solid fa-eye"></i>
+        <span id="btnText">Reveal CVV</span>
+    </button>
+
+    <div class="mt-6 text-xs text-amber-400 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>Visible for <strong>10 seconds</strong> only • Do not share or screenshot</span>
+    </div>
+
+    <div class="mt-10 pt-6 border-t border-white/10">
+        <a href="/dashboard" 
+           class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+// ==================== BACKEND SE CVV AA RAHA HAI ====================
+const actualCVV = "{{ cvv }}";   
+
+let revealed = false;
+let timeoutId = null;
+
+function revealCVV() {
+    if (revealed) return;
+
+    const cvvBox = document.getElementById("cvvBox");
+    const btn = document.getElementById("revealBtn");
+    const btnText = document.getElementById("btnText");
+    const btnIcon = document.getElementById("btnIcon");
+
+    // Show real CVV
+    cvvBox.textContent = actualCVV;
+    cvvBox.classList.remove("blur");
+    cvvBox.classList.add("revealed");
+
+    revealed = true;
+
+    // Update Button
+    btn.disabled = true;
+    btnIcon.classList.remove("fa-eye");
+    btnIcon.classList.add("fa-check");
+    btnText.textContent = "CVV Revealed";
+
+    // Auto hide after 10 seconds
+    timeoutId = setTimeout(() => {
+        hideCVV();
+    }, 10000);
+}
+
+function hideCVV() {
+    const cvvBox = document.getElementById("cvvBox");
+    const btn = document.getElementById("revealBtn");
+    const btnText = document.getElementById("btnText");
+    const btnIcon = document.getElementById("btnIcon");
+
+    cvvBox.textContent = "••••";
+    cvvBox.classList.add("blur");
+    cvvBox.classList.remove("revealed");
+
+    revealed = false;
+    btn.disabled = false;
+    btnIcon.classList.remove("fa-check");
+    btnIcon.classList.add("fa-eye");
+    btnText.textContent = "Reveal CVV";
+}
+
+// Security Features
+document.addEventListener("copy", (e) => {
+    if (document.getElementById("cvvBox").contains(e.target)) {
+        e.preventDefault();
+        alert("Copying CVV is not allowed for security reasons.");
+    }
+});
+
+document.addEventListener("contextmenu", (e) => {
+    if (document.getElementById("cvvBox").contains(e.target)) {
+        e.preventDefault();
+    }
+});
+
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden && revealed) {
+        hideCVV();
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && revealed) {
+        hideCVV();
+    }
+});
+</script>
+
+</body>
+</html>

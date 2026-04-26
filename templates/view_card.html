@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Debit Card - Bharat Bank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        .card-container { perspective: 1200px; }
+        .card {
+            width: 380px; height: 240px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card.flip { transform: rotateY(180deg); }
+        .card-face {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 18px;
+            backface-visibility: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            padding: 24px; color: white;
+        }
+        .card-front { background: linear-gradient(135deg, #1e40af, #3b82f6); }
+        .card-back {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            transform: rotateY(180deg);
+        }
+        .magnetic-strip { background: #111827; height: 45px; border-radius: 4px; }
+
+        .modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85);
+            align-items: center; justify-content: center;
+            z-index: 1000; padding: 1rem;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #1e2937; padding: 2rem;
+            border-radius: 16px; width: 100%; max-width: 440px;
+            border: 1px solid #334155;
+            max-height: 90vh; overflow-y: auto;
+        }
+        .timer { font-weight: 600; color: #f59e0b; }
+
+        .step-indicator {
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .step-dot {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+            transition: all 0.3s;
+        }
+        .step-dot.active  { background: #3b82f6; color: white; }
+        .step-dot.done    { background: #22c55e; color: white; }
+        .step-dot.inactive{ background: #334155; color: #94a3b8; }
+        .step-line { flex: 1; height: 2px; background: #334155; border-radius: 2px; }
+        .step-line.done   { background: #22c55e; }
+
+        .extra-fields { display: none; }
+        .extra-fields.show { display: block; }
+
+        .input-field {
+            width: 100%; background: #0f172a; border: 1px solid #334155;
+            border-radius: 12px; padding: 12px 16px; color: white;
+            font-size: 15px; transition: border-color 0.2s;
+        }
+        .input-field:focus { outline: none; border-color: #3b82f6; }
+        .input-field::placeholder { color: #475569; }
+
+        .action-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 min-h-screen py-12">
+
+<div class="max-w-5xl mx-auto px-4">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-white flex items-center justify-center gap-3">
+            <i class="fa-solid fa-credit-card text-blue-400"></i> Your Debit Card
+        </h1>
+        <p class="text-blue-300 mt-2">Bharat Bank • Secure & Premium</p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-12 items-start justify-center">
+
+        <!-- Debit Card Visual -->
+        <div class="card-container mx-auto lg:mx-0">
+            <div class="card" id="debitCard">
+                <div class="card-face card-front">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-2xl font-bold tracking-wider">Bharat Bank</div>
+                            <div class="text-sm text-blue-200 mt-1">{{ variant or "Visa Debit Card" }}</div>
+                        </div>
+                        {% if variant and "rupay" in variant.lower() %}
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/RuPay.svg/2560px-RuPay.svg.png" alt="RuPay" class="h-10">
+                        {% else %}
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" class="h-10">
+                        {% endif %}
+                    </div>
+                    <div class="mt-10">
+                        <div class="text-2xl tracking-[4px] font-medium font-mono" id="cardNumberDisplay">
+                            {{ card_number | default("XXXX XXXX XXXX XXXX") }}
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-end mt-10">
+                        <div>
+                            <div class="text-xs uppercase tracking-widest text-blue-200">Card Holder</div>
+                            <div class="font-semibold text-lg mt-1 uppercase leading-tight">
+                                {{ full_name or name or "CARD HOLDER" }}
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs uppercase tracking-widest text-blue-200">Valid Thru</div>
+                            <div class="font-semibold text-lg">{{ expiry or "MM/YY" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-face card-back">
+                    <div class="magnetic-strip mt-6"></div>
+                    <div class="flex justify-end mt-8">
+                        <div class="bg-white text-black px-6 py-2 rounded font-mono text-xl font-bold tracking-widest">
+                            {{ cvv or "XXX" }}
+                        </div>
+                    </div>
+                    <div class="mt-6 text-xs text-gray-400 text-center">
+                        This card is the property of Bharat Bank.<br>
+                        Unauthorized use is prohibited.
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-6">
+                <button onclick="flipCard()"
+                        class="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 px-8 py-3 rounded-2xl font-medium flex items-center gap-2 mx-auto transition-all text-white">
+                    <i class="fa-solid fa-rotate"></i> Flip Card
+                </button>
+            </div>
+        </div>
+
+        <!-- Card Management -->
+        <div class="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 text-white">
+            <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-gear text-blue-400"></i> Card Management
+            </h3>
+
+            <div class="space-y-4">
+
+                <button onclick="openModal('cvv')"
+                        class="w-full flex items-center justify-between p-5 bg-white/5 hover:bg-white/10 rounded-2xl transition group">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-eye text-2xl text-violet-400"></i>
+                        <div class="text-left">
+                            <div class="font-medium">View CVV</div>
+                            <div class="text-xs text-gray-400">MPIN + OTP required</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-500"></i>
+                </button>
+
+                <button onclick="openModal('atm_pin')"
+                        class="w-full flex items-center justify-between p-5 bg-white/5 hover:bg-white/10 rounded-2xl transition group">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-key text-2xl text-amber-400"></i>
+                        <div class="text-left">
+                            <div class="font-medium">Set / Change ATM PIN</div>
+                            <div class="text-xs text-gray-400">MPIN + OTP required</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-500"></i>
+                </button>
+
+                <button onclick="openModal('pos_limit')"
+                        class="w-full flex items-center justify-between p-5 bg-white/5 hover:bg-white/10 rounded-2xl transition group">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-sliders text-2xl text-amber-400"></i>
+                        <div class="text-left">
+                            <div class="font-medium">Change POS Limit</div>
+                            <div class="text-xs text-gray-400">MPIN + OTP required</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-500"></i>
+                </button>
+
+                <button onclick="openModal('spending')"
+                        class="w-full flex items-center justify-between p-5 bg-white/5 hover:bg-white/10 rounded-2xl transition group">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-chart-line text-2xl text-sky-400"></i>
+                        <div class="text-left">
+                            <div class="font-medium">Spending Limits</div>
+                            <div class="text-xs text-gray-400">MPIN + OTP required</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-500"></i>
+                </button>
+
+                <button onclick="openModal('replace')"
+                        class="w-full flex items-center justify-between p-5 bg-white/5 hover:bg-white/10 rounded-2xl transition group">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-credit-card text-2xl text-purple-400"></i>
+                        <div class="text-left">
+                            <div class="font-medium">Replace / Re-issue Card</div>
+                            <div class="text-xs text-gray-400">MPIN + OTP required</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-500"></i>
+                </button>
+
+                <button onclick="openModal('block')"
+                        class="w-full flex items-center justify-between p-5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-2xl transition group text-red-400">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-ban text-2xl"></i>
+                        <div class="text-left">
+                            <div class="font-medium">Block Card Permanently</div>
+                            <div class="text-xs text-red-400/70">MPIN + OTP required</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+            </div>
+
+            <div class="mt-10">
+                <a href="/dashboard"
+                   class="block text-center py-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl font-semibold text-lg hover:scale-105 transition-all shadow-lg">
+                    ⬅ Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ==================== MODAL ==================== -->
+<div id="verifyModal" class="modal" onclick="handleBackdropClick(event)">
+    <div class="modal-content" id="modalBox">
+
+        <!-- Action Badge -->
+        <div id="actionBadge" class="action-badge"></div>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step-dot active" id="step1dot">1</div>
+            <div class="step-line" id="stepLine"></div>
+            <div class="step-dot inactive" id="step2dot">2</div>
+        </div>
+
+        <!-- ===== STEP 1 ===== -->
+        <div id="step1Panel">
+            <h2 class="text-xl font-semibold mb-1 text-white" id="modalTitle">Verification</h2>
+            <p class="text-gray-400 text-sm mb-5" id="modalSubtitle"></p>
+
+            <!-- ATM PIN FIELDS -->
+            <div id="atmPinFields" class="extra-fields space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">New 4-Digit ATM PIN</label>
+                    <input type="password" id="newPinInput" maxlength="4" placeholder="Enter new PIN"
+                           class="input-field text-center tracking-widest">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">
+                        Current ATM PIN
+                        <span class="text-gray-500 text-xs">(leave blank if setting for first time)</span>
+                    </label>
+                    <input type="password" id="oldPinInput" maxlength="4" placeholder="Current PIN (if exists)"
+                           class="input-field text-center tracking-widest">
+                </div>
+            </div>
+
+            <!-- POS LIMIT FIELDS -->
+            <div id="posLimitFields" class="extra-fields space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">New POS Limit (₹)</label>
+                    <input type="number" id="posLimitInput" min="0" placeholder="e.g. 25000"
+                           class="input-field">
+                    <p class="text-xs text-gray-500 mt-1">Enter 0 to disable POS transactions</p>
+                </div>
+            </div>
+
+            <!-- BLOCK WARNING -->
+            <div id="blockWarning" class="extra-fields">
+                <div class="bg-red-900/30 border border-red-500/40 rounded-xl p-4 mb-4">
+                    <div class="flex gap-3 items-start">
+                        <i class="fa-solid fa-triangle-exclamation text-red-400 mt-0.5 text-lg"></i>
+                        <div>
+                            <p class="text-red-300 font-semibold text-sm">Permanent Action Warning</p>
+                            <p class="text-red-400/80 text-xs mt-1">
+                                This will permanently block your card. You will need to request
+                                a new card from the bank. This action cannot be undone.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GENERIC INFO (CVV / Spending / Replace) -->
+            <div id="genericInfo" class="extra-fields">
+                <div id="genericInfoBox" class="rounded-xl p-4 mb-4 border">
+                    <p class="text-sm" id="genericInfoText"></p>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-5">
+                <button onclick="closeModal()"
+                        class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl font-medium transition text-white">
+                    Cancel
+                </button>
+                <button onclick="goToVerifyStep()"
+                        class="flex-1 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium transition text-white flex items-center justify-center gap-2">
+                    Next <i class="fa-solid fa-arrow-right text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== STEP 2 ===== -->
+        <div id="step2Panel" class="hidden">
+            <h2 class="text-xl font-semibold mb-1 text-white">Verify Identity</h2>
+            <p class="text-gray-400 text-sm mb-5">
+                Enter your MPIN and the OTP sent to your registered email
+            </p>
+
+            <div class="bg-green-900/20 border border-green-500/30 rounded-xl p-3 mb-5">
+                <p class="text-green-400 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-envelope-circle-check"></i>
+                    OTP sent to your registered email address
+                </p>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">6-Digit MPIN</label>
+                    <input type="password" id="mpinInput" maxlength="6" placeholder="••••••"
+                           class="input-field text-center tracking-widest">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">6-Digit OTP</label>
+                    <div class="flex gap-3">
+                        <input type="text" id="otpInput" maxlength="6" placeholder="Enter OTP"
+                               class="input-field text-center tracking-widest flex-1">
+                        <button onclick="resendOTP()" id="resendBtn"
+                                class="px-5 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm font-medium transition text-white whitespace-nowrap">
+                            Resend
+                        </button>
+                    </div>
+                    <div class="text-xs text-right mt-1 text-gray-400">
+                        Expires in: <span class="timer" id="timer">02:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-8">
+                <button onclick="backToStep1()"
+                        class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl font-medium transition text-white">
+                    <i class="fa-solid fa-arrow-left text-sm mr-1"></i> Back
+                </button>
+                <button onclick="submitVerification()" id="submitBtn"
+                        class="flex-1 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium transition text-white">
+                    Verify & Continue
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+let currentAction = '';
+let timerInterval = null;
+let timeLeft = 120;
+
+// ── Card Flip ──────────────────────────────────────────────
+function flipCard() {
+    document.getElementById("debitCard").classList.toggle("flip");
+}
+
+// ── Open Modal ─────────────────────────────────────────────
+function openModal(action) {
+    currentAction = action;
+    document.getElementById("verifyModal").classList.add("active");
+    showStep1();
+    configureModal(action);
+    clearAllInputs();
+}
+
+// ── Configure modal content per action ────────────────────
+function configureModal(action) {
+    const badge    = document.getElementById("actionBadge");
+    const title    = document.getElementById("modalTitle");
+    const subtitle = document.getElementById("modalSubtitle");
+
+    // Hide all extra sections
+    ["atmPinFields","posLimitFields","blockWarning","genericInfo"].forEach(id => {
+        document.getElementById(id).classList.remove("show");
+    });
+
+    const configs = {
+        cvv: {
+            badgeIcon: "fa-eye", badgeLabel: "View CVV",
+            badgeClass: "bg-violet-900/40 text-violet-300 border border-violet-500/30",
+            title: "View Card CVV",
+            subtitle: "You are requesting to view your debit card CVV. This is a sensitive operation.",
+            extra: "genericInfo",
+            infoText: "Your CVV is a 3-digit security code on the back of your card. It will be shown for 30 seconds only. Never share it with anyone.",
+            infoBg: "bg-violet-900/20 border-violet-500/20", infoColor: "text-violet-300"
+        },
+        atm_pin: {
+            badgeIcon: "fa-key", badgeLabel: "ATM PIN",
+            badgeClass: "bg-amber-900/40 text-amber-300 border border-amber-500/30",
+            title: "Set / Change ATM PIN",
+            subtitle: "Enter your new 4-digit ATM PIN. If you already have a PIN, provide the current one too.",
+            extra: "atmPinFields"
+        },
+        pos_limit: {
+            badgeIcon: "fa-sliders", badgeLabel: "POS Limit",
+            badgeClass: "bg-emerald-900/40 text-emerald-300 border border-emerald-500/30",
+            title: "Change POS Limit",
+            subtitle: "Set your card's Point-of-Sale spending limit for in-store and online purchases.",
+            extra: "posLimitFields"
+        },
+        spending: {
+            badgeIcon: "fa-chart-line", badgeLabel: "Spending Limits",
+            badgeClass: "bg-sky-900/40 text-sky-300 border border-sky-500/30",
+            title: "Spending Limits",
+            subtitle: "Manage your card's daily and monthly spending limits.",
+            extra: "genericInfo",
+            infoText: "After verification you can update your daily and monthly transaction limits on the next page.",
+            infoBg: "bg-sky-900/20 border-sky-500/20", infoColor: "text-sky-300"
+        },
+        replace: {
+            badgeIcon: "fa-credit-card", badgeLabel: "Replace Card",
+            badgeClass: "bg-purple-900/40 text-purple-300 border border-purple-500/30",
+            title: "Replace / Re-issue Card",
+            subtitle: "Request a replacement for your existing debit card.",
+            extra: "genericInfo",
+            infoText: "A new card will be issued. Your current card will be deactivated once the new card is activated. Processing takes 5–7 working days.",
+            infoBg: "bg-purple-900/20 border-purple-500/20", infoColor: "text-purple-300"
+        },
+        block: {
+            badgeIcon: "fa-ban", badgeLabel: "Block Card",
+            badgeClass: "bg-red-900/40 text-red-300 border border-red-500/30",
+            title: "Block Card Permanently",
+            subtitle: "Permanently block your debit card. This action cannot be undone.",
+            extra: "blockWarning"
+        }
+    };
+
+    const cfg = configs[action];
+    if (!cfg) return;
+
+    badge.className = "action-badge " + cfg.badgeClass;
+    badge.innerHTML = `<i class="fa-solid ${cfg.badgeIcon}"></i> ${cfg.badgeLabel}`;
+    title.textContent   = cfg.title;
+    subtitle.textContent = cfg.subtitle;
+
+    document.getElementById(cfg.extra).classList.add("show");
+
+    if (cfg.extra === "genericInfo" && cfg.infoText) {
+        document.getElementById("genericInfoBox").className = `rounded-xl p-4 mb-4 border ${cfg.infoBg}`;
+        document.getElementById("genericInfoText").className = `text-sm ${cfg.infoColor}`;
+        document.getElementById("genericInfoText").textContent = cfg.infoText;
+    }
+}
+
+// ── Step Navigation ────────────────────────────────────────
+function showStep1() {
+    document.getElementById("step1Panel").classList.remove("hidden");
+    document.getElementById("step2Panel").classList.add("hidden");
+    document.getElementById("step1dot").className = "step-dot active";
+    document.getElementById("step1dot").textContent = "1";
+    document.getElementById("step2dot").className = "step-dot inactive";
+    document.getElementById("step2dot").textContent = "2";
+    document.getElementById("stepLine").className = "step-line";
+}
+
+function showStep2() {
+    document.getElementById("step1Panel").classList.add("hidden");
+    document.getElementById("step2Panel").classList.remove("hidden");
+    document.getElementById("step1dot").className = "step-dot done";
+    document.getElementById("step1dot").innerHTML = '<i class="fa-solid fa-check text-xs"></i>';
+    document.getElementById("step2dot").className = "step-dot active";
+    document.getElementById("stepLine").className = "step-line done";
+}
+
+function backToStep1() {
+    showStep1();
+    if (timerInterval) clearInterval(timerInterval);
+}
+
+function goToVerifyStep() {
+    // Validate step-1 fields
+    if (currentAction === "atm_pin") {
+        const newPin = document.getElementById("newPinInput").value.trim();
+        if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+            showToast("Please enter a valid 4-digit new PIN", true);
+            document.getElementById("newPinInput").focus();
+            return;
+        }
+    }
+    if (currentAction === "pos_limit") {
+        const limit = document.getElementById("posLimitInput").value.trim();
+        if (limit === "" || isNaN(limit) || Number(limit) < 0) {
+            showToast("Please enter a valid limit amount (0 or above)", true);
+            document.getElementById("posLimitInput").focus();
+            return;
+        }
+    }
+    if (currentAction === "block") {
+        if (!confirm("Are you absolutely sure you want to permanently block this card? This CANNOT be undone.")) {
+            return;
+        }
+    }
+
+    // Request OTP then advance
+    requestOTP(currentAction);
+    showStep2();
+    resetTimer();
+}
+
+// ── OTP Request ────────────────────────────────────────────
+const OTP_ROUTES = {
+    cvv:       "/request_cvv_otp",
+    atm_pin:   "/request_atm_pin_otp",
+    pos_limit: "/request_pos_limit_otp",
+    spending:  "/request_spending_otp",
+    replace:   "/request_replace_card_otp",
+    block:     "/request_block_card_otp"
+};
+
+function requestOTP(action) {
+    const route = OTP_ROUTES[action];
+    if (!route) return;
+    fetch(route, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrfToken }
+    }).catch(err => console.error("OTP request failed:", err));
+}
+
+// ── Resend OTP ─────────────────────────────────────────────
+function resendOTP() {
+    const btn = document.getElementById("resendBtn");
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+    requestOTP(currentAction);
+    setTimeout(() => {
+        resetTimer();
+        btn.disabled = false;
+        btn.textContent = "Resend";
+        showToast("New OTP sent to your email 📩");
+    }, 1000);
+}
+
+// ── Timer ──────────────────────────────────────────────────
+function resetTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft = 120;
+    document.getElementById("resendBtn").disabled = true;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById("resendBtn").disabled = false;
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    const el = document.getElementById("timer");
+    el.textContent = `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+    el.style.color = timeLeft <= 30 ? "#ef4444" : "#f59e0b";
+}
+
+// ── Close Modal ────────────────────────────────────────────
+function closeModal() {
+    document.getElementById("verifyModal").classList.remove("active");
+    if (timerInterval) clearInterval(timerInterval);
+    clearAllInputs();
+}
+
+function handleBackdropClick(e) {
+    if (e.target.id === "verifyModal") closeModal();
+}
+
+function clearAllInputs() {
+    ["mpinInput","otpInput","newPinInput","oldPinInput","posLimitInput"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+    });
+    const submitBtn = document.getElementById("submitBtn");
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Verify & Continue"; }
+}
+
+// ── Submit ─────────────────────────────────────────────────
+function submitVerification() {
+    const mpin = document.getElementById("mpinInput").value.trim();
+    const otp  = document.getElementById("otpInput").value.trim();
+
+    if (!mpin || mpin.length !== 6 || !/^\d{6}$/.test(mpin)) {
+        showToast("Enter a valid 6-digit MPIN", true);
+        document.getElementById("mpinInput").focus();
+        return;
+    }
+    if (!otp || otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+        showToast("Enter a valid 6-digit OTP", true);
+        document.getElementById("otpInput").focus();
+        return;
+    }
+
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Verifying...';
+
+    if (currentAction === "cvv") {
+        postForm("/view_cvv", { mpin, otp });
+    }
+    else if (currentAction === "atm_pin") {
+        const new_pin = document.getElementById("newPinInput").value.trim();
+        const old_pin = document.getElementById("oldPinInput").value.trim();
+        postForm("/set_atm_pin", { mpin, otp, new_pin, old_pin });
+    }
+    else if (currentAction === "pos_limit") {
+        const limit = document.getElementById("posLimitInput").value.trim();
+        postForm("/set_pos_limit", { mpin, otp, limit });
+    }
+    else if (currentAction === "spending") {
+        postForm("/spending_limits", { mpin, otp });
+    }
+    else if (currentAction === "replace") {
+        postForm("/replace_card", { mpin, otp });
+    }
+    else if (currentAction === "block") {
+        postForm("/block_card", { mpin, otp });
+    }
+}
+
+// ── POST Helper ────────────────────────────────────────────
+function postForm(url, data) {
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrfToken
+        },
+        body: new URLSearchParams(data).toString()
+    })
+    .then(res => {
+        if (res.redirected) { window.location.href = res.url; return; }
+        return res.text();
+    })
+    .then(html => {
+        if (html) { document.open(); document.write(html); document.close(); }
+    })
+    .catch(err => {
+        console.error(err);
+        const btn = document.getElementById("submitBtn");
+        if (btn) { btn.disabled = false; btn.textContent = "Verify & Continue"; }
+        showToast("Network error. Please try again.", true);
+    });
+}
+
+// ── Toast ──────────────────────────────────────────────────
+function showToast(msg, isError = false) {
+    const old = document.getElementById("bbToast");
+    if (old) old.remove();
+    const t = document.createElement("div");
+    t.id = "bbToast";
+    t.style.cssText = `
+        position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+        background:${isError ? "#7f1d1d" : "#1e3a5f"};color:white;
+        padding:12px 24px;border-radius:12px;font-size:14px;z-index:9999;
+        box-shadow:0 8px 24px rgba(0,0,0,0.4);
+        border:1px solid ${isError ? "#ef4444" : "#3b82f6"};
+        transition:opacity 0.3s;white-space:nowrap;
+    `;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity="0"; setTimeout(()=>t.remove(),300); }, 3000);
+}
+
+// ── Card number format on load ─────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+    const el = document.getElementById("cardNumberDisplay");
+    if (el) {
+        let num = el.innerText.trim().replace(/\s+/g,"");
+        if (num && !/^X+$/.test(num.replace(/ /g,""))) {
+            el.innerText = num.replace(/(\d{4})/g,"$1 ").trim();
+        }
+    }
+});
+
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="login-container">
+
+<div class="login-card">
+
+<h2>🔐 Admin Login</h2>
+
+<!-- ✅ FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash {{category}}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="POST">
+
+<!-- ✅ CSRF TOKEN -->
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+<div class="input-group">
+<label>Username</label>
+<input type="text" name="username" placeholder="Enter Username" required>
+</div>
+
+<div class="input-group password-box">
+<label>Password</label>
+<input 
+type="password"
+name="password"
+id="password"
+placeholder="Enter Password"
+required
+>
+<i class="fa-solid fa-eye" onclick="togglePassword()"></i>
+</div>
+
+<button type="submit" class="login-btn">
+Login
+</button>
+
+</form>
+
+<a href="/home" class="back-link">
+← Back to Home
+</a>
+
+</div>
+
+</div>
+
+<style>
+
+.login-container{
+display:flex;
+justify-content:center;
+align-items:center;
+height:60vh;
+}
+
+.login-card{
+background:#1e293b;
+padding:35px;
+border-radius:14px;
+width:350px;
+border:1px solid rgba(147,197,253,0.15);
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+
+.login-card h2{
+text-align:center;
+margin-bottom:20px;
+color:#93c5fd;
+}
+
+/* FLASH */
+.flash{
+padding:10px;
+border-radius:6px;
+margin-bottom:12px;
+text-align:center;
+font-size:14px;
+}
+
+.flash.danger{background:#ef4444;color:white;}
+.flash.success{background:#22c55e;color:white;}
+.flash.info{background:#3b82f6;color:white;}
+
+.input-group{
+margin-bottom:18px;
+display:flex;
+flex-direction:column;
+}
+
+.input-group label{
+margin-bottom:6px;
+font-size:14px;
+color:#94a3b8;
+}
+
+.input-group input{
+padding:10px;
+border-radius:6px;
+border:1px solid #334155;
+background:#0f172a;
+color:white;
+padding-right:40px;
+}
+
+/* PASSWORD ICON */
+.password-box{
+position:relative;
+}
+
+.password-box i{
+position:absolute;
+right:12px;
+top:36px;
+cursor:pointer;
+color:#94a3b8;
+}
+
+.password-box i:hover{
+color:#60a5fa;
+}
+
+/* BUTTON */
+.login-btn{
+width:100%;
+padding:10px;
+background:#3b82f6;
+border:none;
+border-radius:6px;
+color:white;
+cursor:pointer;
+margin-top:10px;
+transition:0.2s;
+}
+
+.login-btn:hover{
+background:#2563eb;
+}
+
+/* BACK */
+.back-link{
+display:block;
+margin-top:20px;
+text-align:center;
+color:#60a5fa;
+text-decoration:none;
+}
+
+.back-link:hover{
+text-decoration:underline;
+}
+
+</style>
+
+<script>
+function togglePassword(){
+let password=document.getElementById("password");
+
+if(password.type==="password"){
+password.type="text";
+}else{
+password.type="password";
+}
+}
+</script>
+
+{% endblock %}

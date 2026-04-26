@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bharat Bank</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* ===== BODY ===== */
+body{
+margin:0;
+font-family: 'Segoe UI', sans-serif;
+background: linear-gradient(135deg, #0b1f3a, #0f172a, #1e3a8a);
+color:#e2e8f0;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* ===== NAVBAR ===== */
+.navbar{
+background: rgba(10,20,40,0.85);
+backdrop-filter: blur(12px);
+padding:16px 30px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow: 0 6px 25px rgba(0,0,0,0.6);
+border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo{
+font-size:20px;
+font-weight:600;
+display:flex;
+align-items:center;
+gap:10px;
+color:#facc15; /* gold */
+}
+
+.logo i{
+font-size:22px;
+}
+
+.nav-links a{
+color:#cbd5e1;
+text-decoration:none;
+margin-left:25px;
+font-size:14px;
+position:relative;
+transition:0.3s;
+}
+
+.nav-links a::after{
+content:'';
+position:absolute;
+width:0%;
+height:2px;
+bottom:-5px;
+left:0;
+background:#facc15;
+transition:0.3s;
+}
+
+.nav-links a:hover{
+color:white;
+}
+
+.nav-links a:hover::after{
+width:100%;
+}
+
+/* ===== CONTAINER ===== */
+.container{
+flex:1;
+padding:40px 20px;
+}
+
+/* ===== FOOTER ===== */
+footer{
+text-align:center;
+padding:18px;
+background: rgba(2,6,23,0.95);
+color:#94a3b8;
+font-size:14px;
+border-top:1px solid rgba(255,255,255,0.1);
+letter-spacing:0.5px;
+}
+
+/* ===== CARD STYLE (usable everywhere) ===== */
+.card{
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(12px);
+border-radius:16px;
+padding:20px;
+box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+border:1px solid rgba(255,255,255,0.1);
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:600px){
+.navbar{
+flex-direction:column;
+gap:10px;
+}
+.nav-links a{
+margin:10px;
+}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<div class="navbar">
+
+<div class="logo">
+<i class="fa-solid fa-building-columns"></i>
+Bharat Bank
+</div>
+
+<div class="nav-links">
+<a href="/">Home</a>
+<a href="/help">Help</a>
+<a href="/about_bank">About</a>
+</div>
+
+</div>
+
+<!-- ===== CONTENT ===== -->
+<div class="container">
+{% block content %}{% endblock %}
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+© 2026 Bharat Bank • Secure • Trusted • Digital Banking
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>All Accounts</h2>
+
+{% if accounts %}
+    <table class="accounts-table">
+        <thead>
+            <tr>
+                <th>Account Number</th>
+                <th>Name</th>
+                <th>Balance</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for acc in accounts %}
+            <tr>
+                <td>{{ acc[0] }}</td>
+                <td>{{ acc[1] }} {{ acc[2] }}</td>
+                <td class="balance">₹{{ "{:,.2f}".format(acc[3]) }}</td>
+                <td class="status status-{{ acc[4]|lower }}">{{ acc[4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="empty-state">
+        <p>No accounts found in the system.</p>
+    </div>
+{% endif %}
+
+<a href="/admin_dashboard" class="back-link">← Back to Dashboard</a>
+
+<style>
+    .accounts-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0 2rem;
+        font-size: 0.96rem;
+        background: #0f172a;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .accounts-table thead {
+        background: #1e293b;
+    }
+
+    .accounts-table th,
+    .accounts-table td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #334155;
+    }
+
+    .accounts-table th {
+        color: #93c5fd;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.82rem;
+        letter-spacing: 0.4px;
+    }
+
+    .accounts-table tbody tr:hover {
+        background-color: #1e293b;
+        transition: background-color 0.12s;
+    }
+
+    .balance {
+        text-align: right;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 500;
+        color: #e2e8f0;
+    }
+
+    .status {
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+
+    .status-active    { color: #4ade80; }
+    .status-inactive  { color: #f87171; }
+    .status-pending   { color: #fbbf24; }
+    .status-blocked   { color: #e879f9; }
+    .status-closed    { color: #94a3b8; }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+        color: #94a3b8;
+        font-size: 1.1rem;
+        background: #0f172a;
+        border-radius: 8px;
+        border: 1px dashed #334155;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 1.5rem;
+        color: #93c5fd;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+        color: #60a5fa;
+    }
+</style>
+
+{% endblock %}

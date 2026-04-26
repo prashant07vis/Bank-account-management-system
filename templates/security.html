@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bharat Bank – Security Guidelines</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --gradient: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      --card: rgba(30, 41, 59, 0.65);
+      --border: rgba(96, 165, 250, 0.25);
+      --accent: #60a5fa;
+      --accent-light: #93c5fd;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --warning: #fbbf24;
+      --success: #22c55e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--gradient);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      background-attachment: fixed;
+      line-height: 1.7;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+      background: var(--card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.45);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.8rem;
+    }
+
+    .subtitle {
+      color: var(--text-light);
+      font-size: 1.15rem;
+    }
+
+    .guidelines-list {
+      list-style: none;
+      counter-reset: guideline-counter;
+    }
+
+    .guidelines-list li {
+      position: relative;
+      padding: 1.2rem 1.2rem 1.2rem 3.5rem;
+      margin-bottom: 1.2rem;
+      background: rgba(96, 165, 250, 0.08);
+      border-left: 5px solid var(--accent);
+      border-radius: 0.8rem 0.8rem 0.8rem 0;
+      transition: all 0.3s;
+    }
+
+    .guidelines-list li:hover {
+      background: rgba(96, 165, 250, 0.14);
+      transform: translateX(6px);
+    }
+
+    .guidelines-list li::before {
+      counter-increment: guideline-counter;
+      content: counter(guideline-counter);
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2.2rem;
+      height: 2.2rem;
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 12px rgba(96,165,250,0.3);
+    }
+
+    .guidelines-list li strong {
+      color: var(--accent-light);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 2.8rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.1rem;
+      transition: all 0.3s;
+    }
+
+    .back-link:hover {
+      color: var(--accent-light);
+      transform: translateX(-6px);
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 2.2rem 1.6rem;
+      }
+      h1 {
+        font-size: 2.6rem;
+      }
+      .guidelines-list li {
+        padding: 1rem 1rem 1rem 3.2rem;
+      }
+      .guidelines-list li::before {
+        left: 0.8rem;
+        width: 2rem;
+        height: 2rem;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>Security Guidelines</h1>
+      <p class="subtitle">Protecting your account is our top priority — and yours too</p>
+    </div>
+
+    <ul class="guidelines-list">
+      <li><strong>Never share your MPIN</strong> with anyone — not even bank staff or family members.</li>
+      <li><strong>Always log out</strong> completely after finishing your banking session, especially on shared devices.</li>
+      <li><strong>Avoid public computers or Wi-Fi</strong> for accessing your Bharat Bank account.</li>
+      <li><strong>Verify the website URL</strong> starts with <strong>https://</strong> and shows the official Bharat Bank domain before entering credentials.</li>
+      <li><strong>Never share OTPs</strong>, transaction codes, or any verification messages with anyone.</li>
+      <li><strong>Report suspicious activity</strong> or unauthorized transactions immediately to the bank administrator.</li>
+      <li><strong>Change your MPIN regularly</strong> — especially if you suspect any compromise.</li>
+      <li><strong>Use strong, unique passwords</strong> and always ensure you're on a secure, private internet connection.</li>
+    </ul>
+
+    <a href="/home" class="back-link">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+
+  </div>
+
+</body>
+</html>

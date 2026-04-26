@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Admin Created</title>
+
+<style>
+
+body{
+font-family:system-ui;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+background:#1e293b;
+padding:40px;
+border-radius:12px;
+text-align:center;
+}
+
+h1{
+color:#10b981;
+}
+
+.admin-no{
+font-size:30px;
+margin-top:10px;
+color:#60a5fa;
+}
+
+button{
+margin-top:25px;
+padding:12px 25px;
+background:#3b82f6;
+border:none;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>Admin Created Successfully</h1>
+
+<p>Your Admin Secret Number</p>
+
+<div class="admin-no">{{ admin_no }}</div>
+
+<a href="/home">
+<button>Go to Main Menu</button>
+</a>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="title">Loan Requests</h2>
+
+<div class="card">
+
+<table class="loan-table">
+
+<thead>
+<tr>
+<th>Loan ID</th>
+<th>Account</th>
+<th>Amount</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for loan in loans %}
+
+<tr>
+
+<td>#{{loan[0]}}</td>
+
+<td>{{loan[1]}}</td>
+
+<td class="amount">₹{{loan[2]}}</td>
+
+<td class="date">{{loan[3]}}</td>
+
+<td>
+
+<a class="btn approve" href="/approve_loan/{{loan[0]}}">
+✔ Approve
+</a>
+
+<a class="btn reject" href="/reject_loan/{{loan[0]}}">
+✖ Reject
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<a href="/admin_dashboard" class="back-btn">← Back to Dashboard</a>
+
+<style>
+
+.title{
+text-align:center;
+margin-top:25px;
+font-size:30px;
+font-weight:600;
+color:#60a5fa;
+}
+
+/* CARD */
+
+.card{
+background:#1e293b;
+padding:30px;
+border-radius:14px;
+max-width:900px;
+margin:30px auto;
+box-shadow:0 15px 40px rgba(0,0,0,0.5);
+}
+
+/* TABLE */
+
+.loan-table{
+width:100%;
+border-collapse:collapse;
+}
+
+.loan-table thead{
+background:#3b82f6;
+}
+
+.loan-table th{
+padding:14px;
+text-align:center;
+color:white;
+}
+
+.loan-table td{
+padding:14px;
+text-align:center;
+border-bottom:1px solid #334155;
+}
+
+.loan-table tr:hover{
+background:#0f172a;
+}
+
+/* AMOUNT */
+
+.amount{
+color:#22c55e;
+font-weight:bold;
+font-size:16px;
+}
+
+/* DATE */
+
+.date{
+color:#cbd5f5;
+}
+
+/* BUTTONS */
+
+.btn{
+padding:6px 14px;
+border-radius:6px;
+text-decoration:none;
+font-size:13px;
+margin:3px;
+display:inline-block;
+}
+
+.approve{
+background:#22c55e;
+color:white;
+}
+
+.approve:hover{
+background:#16a34a;
+}
+
+.reject{
+background:#ef4444;
+color:white;
+}
+
+.reject:hover{
+background:#dc2626;
+}
+
+/* BACK BUTTON */
+
+.back-btn{
+display:block;
+text-align:center;
+margin-top:25px;
+padding:10px 20px;
+background:#3b82f6;
+color:white;
+text-decoration:none;
+border-radius:8px;
+width:200px;
+margin-left:auto;
+margin-right:auto;
+}
+
+.back-btn:hover{
+background:#2563eb;
+}
+
+</style>
+
+{% endblock %}
+

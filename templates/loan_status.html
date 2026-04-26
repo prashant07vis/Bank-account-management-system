@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<title>Loan Status</title>
+
+<style>
+
+body{
+font-family:system-ui;
+background:#0f172a;
+color:white;
+padding:40px;
+}
+
+.title{
+text-align:center;
+margin-bottom:30px;
+color:#60a5fa;
+}
+
+.card{
+background:#1e293b;
+padding:30px;
+border-radius:10px;
+max-width:700px;
+margin:auto;
+box-shadow:0 10px 25px rgba(0,0,0,0.5);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th{
+background:#3b82f6;
+padding:12px;
+text-align:left;
+}
+
+td{
+padding:12px;
+border-bottom:1px solid #334155;
+}
+
+tr:hover{
+background:#0f172a;
+}
+
+.pending{
+color:#facc15;
+font-weight:bold;
+}
+
+.approved{
+color:#22c55e;
+font-weight:bold;
+}
+
+.rejected{
+color:#ef4444;
+font-weight:bold;
+}
+
+.back{
+display:block;
+margin-top:20px;
+text-align:center;
+color:#93c5fd;
+text-decoration:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2 class="title">Loan Status</h2>
+
+<div class="card">
+
+<table>
+
+<tr>
+<th>Loan ID</th>
+<th>Amount</th>
+<th>Interest Rate</th>
+<th>Status</th>
+</tr>
+
+{% for loan in loans %}
+
+<tr>
+
+<td>{{loan[0]}}</td>
+
+<td>₹{{loan[1]}}</td>
+
+<td>{{loan[2]}}%</td>
+
+<td class="
+{% if loan[3]=='Approved' %}
+approved
+{% elif loan[3]=='Rejected' %}
+rejected
+{% else %}
+pending
+{% endif %}
+">
+{{loan[3]}}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<a href="/dashboard" class="back">⬅ Back to Dashboard</a>
+
+</div>
+
+</body>
+
+</html>
